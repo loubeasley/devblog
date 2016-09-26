@@ -11,9 +11,9 @@ var cookies = require('cookie-parser');
 var dbConfig = {
     client: 'mysql',
     connection: {
-        host: '	d5x4ae6ze2og6sjo.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+        host: 'd5x4ae6ze2og6sjo.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
         user: 'mxpzuc8vc2j244zm',
-        password: 'mrfdv4oie28nniis ',
+        password: 'mrfdv4oie28nniis',
         database: 'nbr16jqlmdzdgt6l',
         charset: 'utf8'
     }
