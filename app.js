@@ -74,10 +74,10 @@ fs.readdirSync('./app/controller').forEach(function (file) {
 
 
 
-
+console.log("HAPM!");
 //app.use(require('./app/controller'));
 // {our model definition code goes here}
 
-app.listen(3000, function() {
+app.listen(process.env.PORT || 3000, function() {
     console.log('Express started at port 3000');
 });
