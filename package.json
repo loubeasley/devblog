@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "test",
   "scripts": {
-    "start": "node server.js",
+    "start": "node app.js",
     "test": "karma start",
     "deploy": "gulp production --deploy"
   },
