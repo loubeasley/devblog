@@ -5,7 +5,8 @@
   "license": "MIT",
   "description": "test",
   "scripts": {
-    "start": "gulp",
+    "heroku-postbuild": 'gulp',
+    "start": "server.js",
     "test": "karma start",
     "deploy": "gulp production --deploy"
   },
