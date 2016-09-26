@@ -1,0 +1,18 @@
+<div class="comments-container">
+    <div class="comment-create">
+        <textarea placeholder="Write a comment..."
+                  data-ng-model="$ctrl.pendingComment"
+                  id="first" data-ng-show="show"
+                  ng-init="show = true"
+                  markdown-editor="{'iconlibrary': 'fa', addExtraButtons: true, resize: 'vertical'}">
+        </textarea>
+        <div class="comment-create-footer">
+            <button class="btn-sm btn btn-default right" ng-click="$ctrl.postComment()" ng-init="thing = 0">Post</button>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <!--<div class="comment-info">{{$ctrl.comments.total}} COMMENTS</div>-->
+
+    <article-comments-children article="$ctrl.article" comments="$ctrl.comments" on-post-comment="$ctrl.postComment" parent-id="root">wut</article-comments-children>
+
+</div>

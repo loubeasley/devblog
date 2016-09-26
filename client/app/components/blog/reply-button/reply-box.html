@@ -1,0 +1,11 @@
+<div class="reply-box-cancel-btn" ng-click="$ctrl.hideFn({})"><span class="fa fa-remove"></span></div>
+<div class="comment-create">
+        <textarea placeholder="Write a comment..."
+                  data-ng-model="$ctrl.pendingComment"
+                  markdown-editor="{'iconlibrary': 'fa', addExtraButtons: true, resize: 'vertical', fullscreen: {enable: false}}">
+        </textarea>
+    <div class="comment-create-footer">
+        <button class="btn-sm btn btn-default right" ng-click="$ctrl.postComment()" ng-init="thing = 0">Post</button>
+        <div class="clearfix"></div>
+    </div>
+</div>

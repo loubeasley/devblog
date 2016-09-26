@@ -1,0 +1,22 @@
+<header class="row">
+    <div class="avatar col-md-1">
+        <img src="./img/frakshead.png">
+    </div>
+    <div class="article-title col-md-11">
+        <input class="form-control" placeholder="Enter title here..." ng-model="$ctrl.articleTitle"/>
+    </div>
+    <div class="article-info col-md-11">Posted on {{$ctrl.rightNow | date}} by <a>{{::$ctrl.currentUser}}</a></div>
+</header>
+<div class="comment-create">
+
+    <textarea placeholder="Body of article..."
+              data-ng-model="$ctrl.articleBody"
+              id="first" data-ng-show="show"
+              ng-init="show = true"
+              markdown-editor="{'iconlibrary': 'fa', addExtraButtons: true, resize: 'vertical'}">
+    </textarea>
+
+
+</div>
+<button class="btn btn-sm btn-default right" ng-click="$ctrl.postArticle()">Post</button>
+<div class="clearfix"></div>

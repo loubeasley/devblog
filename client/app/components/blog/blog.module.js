@@ -1,0 +1,1 @@
+angular.module('components.blog', ['ui.router']);
