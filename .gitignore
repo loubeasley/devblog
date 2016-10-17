@@ -6,4 +6,4 @@ node_modules
 .jekyll-metadata
 .idea
 npm-debug.log
-templates.js
+src/templates.js

@@ -1,0 +1,355 @@
+html {
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+
+body {
+    background-color: black;
+    color: #d6d6d6;
+}
+
+.splash-bg {
+    background: url("../img/splash.png") no-repeat;
+    height: 720px;
+    position: relative;
+    top: -330px;
+    z-index: -1;
+    margin-bottom: -650px;
+}
+
+.right {
+    float: right;
+}
+
+
+
+blog article {
+    margin-bottom: 50px;
+    position: relative;
+}
+
+article-page article {
+    margin-bottom: 10px;
+}
+
+article .avatar img, article-create .avatar img {
+    height: auto;
+    float: left;
+    width: 65px;
+    margin-right: 10px;
+    max-width: 805px;
+}
+
+/*article img {
+    height: auto;
+    float: left;
+    width: 65px;
+    margin-right: 10px;
+    max-width: 805px;
+}*/
+
+.logo {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 49px;
+    height: 200px;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+main.container {
+    max-width: 875px;
+    z-index: 2;
+    position:  relative;
+}
+
+.article-title {
+    height: 47px;
+    font-size: 36px;
+}
+
+article header, article-create header {
+    margin-bottom: 5px;
+    text-shadow: #080808;
+}
+
+article .article-content p {
+    /*max-height: 300px;
+    overflow: hidden;*/
+    min-height: 100px;
+
+}
+article .article-content, article-create .article-content {
+    background: rgb(18, 18, 18);
+    padding: 20px;
+}
+
+article .article-comments {
+    margin-top: 5px;
+}
+
+article .avatar {
+
+}
+
+.article-info {
+    position: relative;
+}
+
+.article-admin-ctrl {
+    position: absolute;
+    margin-right: 14px;
+    right: 0;
+    bottom: 0;
+}
+
+.comment-info {
+    margin-bottom: 10px;
+}
+
+.comment-body.user-comment {
+    border-left: 2px solid green;
+}
+.comment-body .author {
+    font-size: 12px;
+
+    margin-bottom: 5px;
+}
+
+.comment-body {
+    background-color: #1a1a1a;
+    padding: 20px;
+    margin-bottom: 10px;
+    padding: 10px 15px 15px 15px;
+}
+
+.comment-create {
+    background-color: #1a1a1a;
+    /*padding: 20px;*/
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.comment-create textarea {
+    /*resize: none;*/
+    width: 100%;
+    background-color: transparent;
+    outline: 0;
+    border: none;
+}
+
+.comments-container > article-comments-children > .children {
+    padding-left: 0;
+}
+
+.children {
+    padding-left: 40px;
+}
+
+.children .comment-create {
+    margin-left: 40px;
+}
+
+a {
+    color: #ce422b;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #ff4e2e;
+    cursor: pointer;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    color: #333;
+    background-color: #333;
+}
+
+.comment-spacer {
+    margin-left: 20px;
+}
+
+/*asdf*/
+
+/*.ui-view-container {
+    position: relative;
+}
+
+[ui-view].ng-enter, [ui-view].ng-leave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    -webkit-transition:all .5s ease-in-out;
+    -moz-transition:all .5s ease-in-out;
+    -o-transition:all .5s ease-in-out;
+    transition:all .5s ease-in-out;
+}
+
+[ui-view].ng-enter {
+    opacity: 0;
+    -webkit-transform:scale3d(0.5, 0.5, 0.5);
+    -moz-transform:scale3d(0.5, 0.5, 0.5);
+    transform:scale3d(0.5, 0.5, 0.5);
+}
+
+[ui-view].ng-enter-active {
+    opacity: 1;
+    -webkit-transform:scale3d(1, 1, 1);
+    -moz-transform:scale3d(1, 1, 1);
+    transform:scale3d(1, 1, 1);
+}
+
+[ui-view].ng-leave {
+    opacity: 1;
+    -webkit-transform:translate3d(0, 0, 0);
+    -moz-transform:translate3d(0, 0, 0);
+    transform:translate3d(0, 0, 0);
+}
+
+[ui-view].ng-leave-active {
+    opacity: 0;
+    -webkit-transform:translate3d(100px, 0, 0);
+    -moz-transform:translate3d(100px, 0, 0);
+    transform:translate3d(100px, 0, 0);
+}*/
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.9);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.9);
+}
+
+.comment-create-footer {
+    padding: 5px;
+}
+
+pre {
+    border-radius: 0;
+    border: none;
+    background-color: #292929;
+    color: #eeeeee;
+}
+
+.article-title .form-control {
+    height: 45px;
+    color: #ce422b;
+    font-weight: bold;
+    font-size: 36px;
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, .3);
+
+}
+
+/* bootstrap changes */
+.form-control {
+    background-color: #1a1a1a;
+    color: white;
+    border-radius: 0;
+}
+
+.fadeout {
+    position: absolute;
+    bottom: 0em;
+    width:100%;
+    height: 4em;
+    background: -webkit-linear-gradient(
+            rgba(255, 255, 255, 0) 0%,
+            rgb(18, 18, 18) 100%
+    );
+    background-image: -moz-linear-gradient(
+            rgba(255, 255, 255, 0) 0%,
+            rgb(18, 18, 18) 100%
+    );
+    background-image: -o-linear-gradient(
+            rgba(255, 255, 255, 0) 0%,
+            rgb(18, 18, 18) 100%
+    );
+    background-image: linear-gradient(
+            rgba(255, 255, 255, 0) 0%,
+            rgb(18, 18, 18) 100%
+    );
+    background-image: -ms-linear-gradient(
+            rgba(255, 255, 255, 0) 0%,
+            rgb(18, 18, 18) 100%
+    );
+}
+
+reply-box {
+    position: relative;
+    display: block;
+}
+
+reply-box .reply-box-cancel-btn {
+    position: absolute;
+    right: 11px;
+    top: 9px;
+    font-size: 17px;
+    z-index: 2;
+}
+
+reply-box .reply-box-cancel-btn:hover {
+    color: white;
+    cursor: pointer;
+}
+
+.comment-disabled-overlay {
+    pointer-events: none;
+}
+
+.comment-disabled-overlay:before {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: white;
+    z-index: 6;
+    content: ' ';
+}
+
+.comment-disabled-overlay:after {
+    position: absolute;
+    color: white;
+    z-index: 6;
+    top: 95px;
+    left: 197px;
+    margin: 0 auto;
+    font-size: 23px;
+    content: 'You must be logged in to make a comment.';
+}
+
+.comment-nologin-info {
+    border: 1px dotted gray;
+    background-color: #000;
+    padding: 15px;
+}
+
+.big-header {
+    font-size: 50px;
+    color: #d43f3a;
+}
+
+.access-denied-block {
+    height: 321px;
+    background: black;
+    border: 1px dotted;
+    padding: 15px;
+    text-align: center;
+}
+
+.bigger-text {
+    font-size: 20px;
+}

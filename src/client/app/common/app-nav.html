@@ -1,0 +1,81 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#"><span class="fa fa-database"></span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li ui-sref-active="active"><a ui-sref=".blog">Blog</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+
+
+            <ul class="nav navbar-nav navbar-right">
+                <li ng-show="$root.session != null" class="dropdown"><a class="text-primary" data-toggle="dropdown">
+                    Welcome, {{$root.session.username}}!</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a>haspm!!!</a>
+                        </li>
+                        <li>
+                            <a>haspm!!!</a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li><a ng-click="$ctrl.logout()" ng-show="$root.session != null">Log out</a></li>
+
+                <li ui-sref-active="active"><a ui-sref=".register" ng-hide="$root.session != null">Sign Up</a></li>
+
+                <li class="dropdown" ng-hide="$root.session != null" ui-sref-active="active">
+                    <a ui-sref="app.login" >Sign in <!--<b class="caret"></b>--></a>
+                    <!--<ul class="dropdown-menu" style="padding: 15px;min-width: 250px;">
+                        <li>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form class="form" role="form" accept-charset="UTF-8" id="login-nav">
+                                        <div class="form-group">
+                                            <label class="sr-only" for="exampleInputEmail2">Email address</label>
+                                            <input ng-model="$ctrl.login.username" type="text" class="form-control" id="exampleInputEmail2" placeholder="Email address" required="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="sr-only" for="exampleInputPassword2">Password</label>
+                                            <input ng-model="$ctrl.login.password" type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required="">
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"> Remember me
+                                            </label>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" data-toggle="dropdown" class="btn btn-success btn-block" ng-click="$ctrl.submit()">Sign in</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="/api/session/facebook">facebook</a>
+                            <input class="btn btn-primary btn-block" type="button" id="sign-in-google" value="Sign In with Facebook" href="/api/session/facebook">
+                            <input class="btn btn-primary btn-block" type="button" id="sign-in-twitter" value="Sign In with Twitter">
+                        </li>
+                    </ul>-->
+                </li>
+            </ul>
+        </div>
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="splash-bg"></div>
+<div class="logo">
+    <img src="./img/logo.png" />
+</div>

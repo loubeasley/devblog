@@ -13,17 +13,16 @@ import nodemon from 'gulp-nodemon';
 import del from 'del';
 import path from 'path';
 import child from 'child_process';
+import babel from 'gulp-babel';
 
 const exec = child.exec;
 const argv = yargs.argv;
-const root = 'client/';
+const root = 'src/client/';
 const paths = {
-    dist: './dist/',
+    dist: 'src/dist/',
     scripts: [`${root}/app/**/*.js`/*, `!${root}/app/!**!/!*.spec.js`*/],
     tests: `${root}/app/**/*.spec.js`,
     styles: [
-        /*`node_modules/bootstrap/dist/css/bootstrap.css`,
-        `node_modules/bootstrap/dist/css/bootstrap-theme.css`,*/
         `${root}/css/*.css`
     ],
     templates: `${root}/app/**/*.html`,
@@ -34,6 +33,7 @@ const paths = {
         'angular-resource/angular-resource.js',
         'angular-animate/angular-animate.js',
         'angular-sanitize/angular-sanitize.js',
+        'angular-messages/angular-messages.js',
         'angular-ui-router/release/angular-ui-router.js',
         'marked/lib/marked.js',
         'angular-marked/dist/angular-marked.min.js',
@@ -42,9 +42,6 @@ const paths = {
         'angular-markdown-editor/src/angular-markdown-editor.js',
         'angular-utils-ui-breadcrumbs/uiBreadcrumbs.js',
         'toastr/build/toastr.min.js'
-        //'firebase/firebase.js',
-        //'angularfire/dist/angularfire.js',
-        //'angular-loading-bar/build/loading-bar.min.js'
     ],
     static: [
         `${root}/index.html`,
@@ -54,6 +51,16 @@ const paths = {
 };
 
 server.create();
+
+
+
+gulp.task('babel', () => {
+    return gulp.src(['src/**/*.js', '!src/dist/**', '!src/client/**'])
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(gulp.dest('build'));
+});
 
 gulp.task('clean', cb => del(paths.dist + '**/*', cb));
 
@@ -67,21 +74,21 @@ gulp.task('templates', () => {
                 return url.replace(path.dirname(url), '.');
             }
         }))
-        .pipe(gulp.dest('./'));
+        .pipe(gulp.dest('build'));
 });
 
 gulp.task('modules', ['templates'], () => {
-    return gulp.src(paths.modules.map(item => 'node_modules/' + item))
+    return gulp.src(paths.modules.map(item => './node_modules/' + item))
         .pipe(concat('vendor.js'))
         .pipe(gulpif(argv.deploy, uglify()))
-        .pipe(gulp.dest(paths.dist + 'js/'));
+        .pipe(gulp.dest('build/dist/' + 'js/'));
 });
 
 gulp.task('styles', () => {
     return gulp.src(paths.styles)
         .pipe(sass({outputStyle: 'compressed'}))
         //.pipe(concat('style.css'))
-        .pipe(gulp.dest(paths.dist + 'css/'));
+        .pipe(gulp.dest('build/dist/' + 'css/'));
 });
 
 gulp.task('scripts', ['modules'], () => {
@@ -89,13 +96,16 @@ gulp.task('scripts', ['modules'], () => {
         `!${root}/app/**/*.spec.js`,
         `${root}/app/**/*.module.js`,
         ...paths.scripts,
-        './templates.js'
+        './build/templates.js'
     ])
+        /*.pipe(babel({
+            presets: ['es2015']
+        }))*/
         .pipe(wrap('(function(angular){\n\'use strict\';\n<%= contents %>})(window.angular);'))
         .pipe(concat('bundle.js'))
         .pipe(ngAnnotate())
         .pipe(gulpif(argv.deploy, uglify()))
-        .pipe(gulp.dest(paths.dist + 'js/'));
+        .pipe(gulp.dest('build/dist/' + 'js/'));
 });
 
 /*gulp.task('serve', ['nodemon'], () => {
@@ -109,38 +119,52 @@ gulp.task('scripts', ['modules'], () => {
     });
 });*/
 
-gulp.task('nodemon', (cb) => {
+var nodemon_inst;
+
+gulp.task('nodemon', ['babel'], (cb) => {
     var callbackCalled = false;
-    return nodemon({script: 'app.js'})
-        .on('start', () => {
-            if(!callbackCalled) {
-                callbackCalled = true;
-                cb();
-            }
+    if (!nodemon_inst) {
+        nodemon_inst = nodemon({
+            script: `build/app.js`,
+            watch: ['nothing']
         })
+            .on('start', () => {
+                if(!callbackCalled) {
+                    callbackCalled = true;
+                    cb();
+                }
+            })
+            .on('restart', () => {
+                console.log('WOOT');
+            });
+    } else {
+        nodemon_inst.emit('restart');
+    }
+
+    //return nodemon_inst;
 });
 
 gulp.task('copy', ['clean'], () => {
-    return gulp.src(paths.static, {base: 'client'})
-        .pipe(gulp.dest(paths.dist));
+    return gulp.src(paths.static, {base: 'src/client'})
+        .pipe(gulp.dest('build/dist/'));
 });
 
-gulp.task('watch', [/*'serve',*/ 'scripts'], () => {
+gulp.task('watch', ['nodemon'], () => {
     gulp.watch([paths.scripts, paths.templates], ['scripts']);
     gulp.watch(paths.styles, ['styles']);
+    gulp.watch(['src/**/*.js', '!src/client/!**'], ['nodemon']);
 });
 
-/*gulp.task('firebase', ['styles', 'scripts'], cb => {
-    return exec('firebase deploy', function (err, stdout, stderr) {
-        console.log(stdout);
-        console.log(stderr);
-        cb(err);
-    });
-});*/
+gulp.task('set-dev-node-env', function() {
+    return process.env.NODE_ENV = 'development';
+});
 
 gulp.task('default', [
+    'set-dev-node-env',
+    /*'babel',*/
     'copy',
     'styles',
+    'scripts',
     'nodemon',
     /*'serve',*/
     'watch'
@@ -148,6 +172,7 @@ gulp.task('default', [
 
 gulp.task('production', [
     'copy',
+    'styles',
     'scripts',
-    'firebase'
+    'nodemon'
 ]);

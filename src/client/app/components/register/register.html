@@ -1,0 +1,74 @@
+<!--<h1 class="text-center">Sign up!</h1>-->
+
+<div class="row">
+    <form server-validate name="registerForm" ng-submit="$ctrl.register()">
+        <div class="col-md-6 col-md-offset-3 stacked-inputs">
+            <h1><span class="fa fa-user-plus" aria-hidden="true"></span> <span>Register</span></h1>
+
+            <div class="form-group no-margin"
+                 ng-class="{ 'has-error': registerForm.username.$invalid && registerForm.username.$dirty }">
+                <input class="form-control input-lg"
+                       placeholder="Username"
+                       name="username"
+                       required
+                       ng-pattern="/^[A-Za-z0-9_@.]*$/"
+                       minlength="3"
+                       maxlength="20"
+                       ng-model="$ctrl.registerData.username"
+                       ng-model-options="{'updateOn' : 'mouseup blur'}"/>
+            </div>
+
+            <div class="form-group no-margin"
+                 ng-class="{ 'has-error': registerForm.password.$invalid && registerForm.password.$dirty }">
+                <input class="form-control input-lg"
+                       type="password"
+                       placeholder="Password"
+                       name="password"
+                       required
+                       minlength="8"
+                       maxlength="40"
+                       ng-model="$ctrl.registerData.password"
+                       ng-model-options="{'updateOn' : 'mouseup blur'}"/>
+            </div>
+
+            <div class="form-group"
+                 ng-class="{ 'has-error': registerForm.confirmPassword.$invalid && registerForm.confirmPassword.$dirty }">
+                <input class="form-control input-lg"
+                       type="password"
+                       placeholder="Confirm Password"
+                       name="confirmPassword"
+                       required
+                       compare-to="$ctrl.registerData.password"
+                       ng-model="$ctrl.registerData.confirmPassword"
+                       ng-model-options="{'updateOn' : 'mouseup blur'}" />
+            </div>
+            <div ng-messages="registerForm.username.$error"
+                 ng-if="registerForm.username.$dirty && registerForm.username.$invalid">
+
+                <div ng-message="required">Username required</div>
+                <div ng-message="pattern" marked="'Username must not contain special characters. You may use: `.`, `_`, and `@`.'"></div>
+                <div ng-message="minlength">Username is too short.</div>
+                <div ng-message="maxlength">Username is too long.</div>
+                <div ng-message="server.failed">{{$ctrl.errors['username'].message}}</div>
+            </div>
+
+            <div ng-messages="registerForm.password.$error"
+                 ng-if="registerForm.password.$dirty && registerForm.password.$invalid">
+
+                <div ng-message="required">Password required</div>
+                <div ng-message="minlength">Password is too short.</div>
+                <div ng-message="maxlength">Password is too long.</div>
+                <div ng-message="server.failed">{{$ctrl.errors['password'].message}}</div>
+            </div>
+
+            <div ng-messages="registerForm.confirmPassword.$error"
+                 ng-if="registerForm.confirmPassword.$dirty && registerForm.confirmPassword.$invalid && $ctrl.registerData.password.length">
+
+                <div ng-message="required">Confirm password required</div>
+                <div ng-message="compareTo">Passwords do not match!</div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block" ng-disabled="registerForm.$invalid">Sign up</button>
+            <h5>Already have an account? <a ui-sref="app.login">Sign in here</a>.</h5>
+        </div>
+    </form>
+</div>

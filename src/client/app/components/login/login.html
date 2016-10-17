@@ -1,0 +1,38 @@
+<div class="row">
+    <form server-validate name="loginForm" ng-submit="$ctrl.login()">
+        <div class="col-md-6 col-md-offset-3 stacked-inputs">
+            <h1><span class="fa fa-sign-in" aria-hidden="true"></span> <span>Login</span></h1>
+
+            <div class="form-group no-margin"
+                 ng-class="{ 'has-error': loginForm.username.$invalid && (loginForm.username.$dirty || loginForm.$submitted) }">
+                <input class="form-control input-lg"
+                       placeholder="Username"
+                       name="username"
+                       required
+                       ng-model="$ctrl.loginData.username"/>
+            </div>
+
+            <div class="form-group"
+                 ng-class="{ 'has-error': loginForm.password.$invalid && (loginForm.password.$dirty || loginForm.$submitted) }">
+                <input class="form-control input-lg"
+                       type="password"
+                       placeholder="Password"
+                       name="password"
+                       required
+                       ng-model="$ctrl.loginData.password"/>
+            </div>
+
+            <div ng-messages="loginForm.username.$error">
+                <div ng-message="server.failed">{{$ctrl.errors['username'].message}}</div>
+            </div>
+
+            <div ng-messages="loginForm.password.$error">
+                <div ng-message="server.failed">{{$ctrl.errors['password'].message}}</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" ng-disabled="loginForm.$invalid">Submit</button>
+            <h5>Don't have an account? <a ui-sref="app.register">Register here</a>.</h5>
+        </div>
+    </form>
+
+</div>
