@@ -14,8 +14,8 @@ function BlogService($resource) {
             return Article.get({id: key}).$promise
                 .then(function (result) {
                     if(result.success) return result.results;
-
-                    return [];
+                    console.log('rejected');
+                    throw new Error('Article doesn\'t exist!');
                 });
         },
         getCommentsByArticle: function(obj) {

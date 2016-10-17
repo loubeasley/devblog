@@ -24,6 +24,7 @@ angular
                 component: 'articlePage',
                 resolve: {
                     article: function ($transition$, BlogService) {
+                        console.log("asdf!!!");
                         var key = $transition$.params().articleID;
                         return BlogService.getArticleById(key);
                     },

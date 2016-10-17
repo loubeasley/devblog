@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import {Router} from 'express';
 import * as auth from '../middleware/auth';
 let router = Router();
 
@@ -43,18 +43,15 @@ router.route('/')
             });
     });
 router.route('/:articleID')
-    .get(function(req, res) {
+    .get(function (req, res) {
         Article.model.forge()
             .query({where: {articleID: req.params['articleID']}})
             .fetch({withRelated: ['user', 'comments']})
             .then(function (collection) {
-                if (!collection) {
-                    res.status(404)
-                        .json({
-                            success: false,
-                            message: 'Article does not exist.'
-                        });
-                }
+                console.log(collection);
+                if (!collection)
+                    throw new Error('Article doesn\'t exist');
+
 
                 res.json({
                     success: true,
@@ -62,11 +59,10 @@ router.route('/:articleID')
                 });
             })
             .catch(function (err) {
-                res.status(500)
-                    .json({
-                        success: false,
-                        message: err.message
-                    });
+                res.json({
+                    success: false,
+                    message: err.message
+                });
             });
     })
     .put(auth.admin, function (req, res) {

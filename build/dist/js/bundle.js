@@ -26,6 +26,16 @@ angular.module('root', [
 (function(angular){
 'use strict';
 angular
+    .module('components', [
+        'components.blog',
+        'components.register',
+        'components.login',
+        'components.error-page'
+    ]);
+})(window.angular);
+(function(angular){
+'use strict';
+angular
     .module('common', [
         'ui.router',
         'ngResource',
@@ -64,23 +74,13 @@ angular
     }]);})(window.angular);
 (function(angular){
 'use strict';
-angular
-    .module('components', [
-        'components.blog',
-        'components.register',
-        'components.login',
-        'components.error-page'
-    ]);
-})(window.angular);
-(function(angular){
-'use strict';
 angular.module('components.blog', ['ui.router']);})(window.angular);
 (function(angular){
 'use strict';
-angular.module('components.error-page', ['ui.router']);})(window.angular);
+angular.module('components.login', ['ui.router']);})(window.angular);
 (function(angular){
 'use strict';
-angular.module('components.login', ['ui.router']);})(window.angular);
+angular.module('components.error-page', ['ui.router']);})(window.angular);
 (function(angular){
 'use strict';
 angular.module('components.register', ['ui.router']);})(window.angular);
@@ -301,6 +301,14 @@ angular
             return $location.path();
         });
 
+        //send error msg to error page
+        $transitionsProvider.onError({ to: function (state) { return true }},
+            function ($transition$) {
+                console.log('ERROR');
+                return $transition$.router.stateService.go('app.error-page', {error: 404})
+
+            });
+
         $transitionsProvider.onStart({ to: function (state) { return state.requiresAdmin }},
             function ($transition$) {
 
@@ -323,6 +331,11 @@ angular
                         $transition$.router.stateService.go('app.logged-in');
                     })
             });
+    }])
+    .run(["$state", function ($state) {
+        $state.defaultErrorHandler(function() {
+            // Do not log transitionTo errors
+        });
     }]);})(window.angular);
 (function(angular){
 'use strict';
@@ -334,6 +347,285 @@ function AppController($state, $rootScope) {
 angular
     .module('common')
     .controller('AppController', AppController);})(window.angular);
+(function(angular){
+'use strict';
+function BlogService($resource) {
+    var Article = $resource('/api/article/:id', {articleID: '@id'});
+    var Comments = $resource('/api/comments');
+    return {
+        getArticles: function() {
+            return Article.get().$promise
+                .then(function (result) {
+                    if(result.success) return result.results;
+
+                    return [];
+                });
+        },
+        getArticleById: function (key) {
+            return Article.get({id: key}).$promise
+                .then(function (result) {
+                    if(result.success) return result.results;
+                    console.log('rejected');
+                    throw new Error('Article doesn\'t exist!');
+                });
+        },
+        getCommentsByArticle: function(obj) {
+            if(!obj.parentID) obj.parentID = null;
+
+            return Comments.get(obj).$promise
+                .then(function (result) {
+
+                    if(result.success) return result;
+
+                    return [];
+                });
+        },
+        postCommentForArticle: function(data) {
+
+            return Comments.save(data).$promise
+                .then(function (result) {
+                    if(result.success) return result.results;
+
+                    return [];
+                });
+        },
+        postArticle: function(data) {
+            return Article.save(data).$promise
+                .then(function (result) {
+                    return result;
+                });
+        }
+    }
+}
+
+BlogService.$inject = ['$resource'];
+
+angular
+    .module('components.blog')
+    .factory('BlogService', BlogService);})(window.angular);
+(function(angular){
+'use strict';
+var login = {
+    templateUrl: './login.html',
+    controller: 'LoginController',
+    bindings: {
+        errors: '<',
+        previousState: '<'
+    }
+};
+
+angular
+    .module('components.login')
+    .component('login', login)
+    .config(["$stateProvider", function ($stateProvider) {
+        $stateProvider
+            .state('app.login', {
+                url: '/login?username',
+                component: 'login',
+                params: {
+                    errors: null,
+                    password: null
+                },
+                redirectIfAuth: true,
+                resolve: {
+                    'errors': ["$stateParams", function($stateParams) {
+                        console.log($stateParams);
+                        return $stateParams.errors;
+                    }],
+                    previousState: [
+                        "$state",
+                        function ($state) {
+                            console.log($state.params);
+                            return {
+                                name: $state.current.name,
+                                params: angular.copy($state.params),
+                                URL: $state.href($state.current.name, $state.params)
+                            };
+                        }
+                    ]
+                },
+                views: {
+                    '': {
+                        component: 'login'
+                    },
+                    widget: {
+                        template: 'asdf'
+                    }/*,
+                    'errors@app.login': {
+                        component: 'errorBox'
+                    }*/
+                },
+                data: {
+                    displayName: 'login'
+                }
+            });
+    }]);})(window.angular);
+(function(angular){
+'use strict';
+function LoginController (SessionService, $state, $stateParams, $scope) {
+    var ctrl = this;
+    console.log(ctrl);
+    ctrl.fields = ['username', 'password'];
+    ctrl.loginData = {
+        username: $stateParams.username || '',
+        password: $stateParams.password || '',
+    };
+    ctrl.login = function () {
+        if(!ctrl.loginData.username) return toastr.error('missing username');
+        if(!ctrl.loginData.password) return toastr.error('missing password');
+
+        SessionService.login(ctrl.loginData)
+            .then(function(res) {
+                if(res.data.success) {
+                    toastr.success('Login was successful!');
+                    $state.go(ctrl.previousState.name, ctrl.previousState.params);
+                }
+
+                if(res.data.errors) {
+                    $scope.serverErrors = ctrl.errors = res.data.errors;
+                }
+
+            });
+    };
+
+    ctrl.reload = function (){
+        $state.go('.', {errors: ['you done fucked up']})
+    }
+
+    ctrl.$onInit = function () {
+        if(ctrl.errors) $scope.serverErrors = ctrl.errors;
+    }
+
+}
+
+LoginController.$inject = ['SessionService', '$state', '$stateParams', '$scope'];
+
+angular.module('components.login')
+    .controller('LoginController', LoginController);})(window.angular);
+(function(angular){
+'use strict';
+var errorPage = {
+    templateUrl: './error-page.html',
+    controller: 'ErrorPageController',
+    bindings: {
+        previousState: '<'
+    }
+};
+
+angular
+    .module('components.error-page')
+    .component('errorPage', errorPage)
+    .config(["$stateProvider", function ($stateProvider) {
+        $stateProvider
+            .state('app.error-page', {
+                /*url: '/error-page?error',*/
+                component: 'errorPage',
+                views: {
+                    '': {
+                        component: 'errorPage'
+                    }
+                },
+                params: {
+                    error: '404'
+                },
+                resolve: {
+                    previousState: [
+                        "$state",
+                        function ($state) {
+                            console.log($state.params);
+                            return {
+                                name: $state.current.name,
+                                params: angular.copy($state.params),
+                                URL: $state.href($state.current.name, $state.params)
+                            };
+                        }
+                    ]
+                },
+                data: {
+                    displayName: 'errorPage'
+                }
+            });
+    }]);})(window.angular);
+(function(angular){
+'use strict';
+function ErrorPageController ($state, $stateParams) {
+    var ctrl = this;
+    console.log($stateParams);
+    var errors = {
+        404: 'Not Found',
+        403: 'Access Denied'
+    };
+    ctrl.errorCode = $stateParams.error || 404;
+    ctrl.errorDesc = errors[$stateParams.error || 404];
+    ctrl.back = function () {
+        $state.go(ctrl.previousState.name || 'app.blog', ctrl.previousState.params || {});
+    }
+}
+
+ErrorPageController.$inject = ['$state', '$stateParams'];
+
+angular.module('components.error-page')
+    .controller('ErrorPageController', ErrorPageController);})(window.angular);
+(function(angular){
+'use strict';
+var register = {
+    templateUrl: './register.html',
+    controller: 'RegisterController'
+};
+
+angular
+    .module('components.register')
+    .component('register', register)
+    .config(["$stateProvider", function ($stateProvider) {
+        $stateProvider
+            .state('app.register', {
+                url: '/register',
+                component: 'register',
+                redirectIfAuth: true,
+                views: {
+                    '': {
+                        component: 'register'
+                    },
+                    widget: {
+                        template: 'asdf'
+                    }
+                },
+                data: {
+                    displayName: 'register'
+                }
+            });
+    }]);})(window.angular);
+(function(angular){
+'use strict';
+function RegisterController (SessionService, $state, $scope) {
+    var ctrl = this;
+    ctrl.fields = ['username', 'password', 'confirmPassword'];
+    ctrl.registerData = {};
+    ctrl.register = function () {
+        if(!ctrl.registerData.username) return toastr.error('missing username');
+        if(!ctrl.registerData.password) return toastr.error('missing password');
+        if(!ctrl.registerData.confirmPassword) return toastr.error('missing confirmPassword');
+
+        SessionService.signup(ctrl.registerData)
+            .then(function (res) {
+                if(res.data.success) {
+                    toastr.success('Registration was successful!');
+                    $state.go('app.blog');
+                }
+
+                if(res.data.errors) {
+                    $scope.serverErrors = ctrl.errors = res.data.errors;
+                }
+            });
+
+
+    };
+}
+
+RegisterController.$inject = ['SessionService', '$state', '$scope'];
+
+angular.module('components.register')
+    .controller('RegisterController', RegisterController);})(window.angular);
 (function(angular){
 'use strict';
 angular.module('monospaced.elastic', [])
@@ -637,285 +929,6 @@ angular
     .controller('ErrorBoxController', ErrorBoxController);})(window.angular);
 (function(angular){
 'use strict';
-function BlogService($resource) {
-    var Article = $resource('/api/article/:id', {articleID: '@id'});
-    var Comments = $resource('/api/comments');
-    return {
-        getArticles: function() {
-            return Article.get().$promise
-                .then(function (result) {
-                    if(result.success) return result.results;
-
-                    return [];
-                });
-        },
-        getArticleById: function (key) {
-            return Article.get({id: key}).$promise
-                .then(function (result) {
-                    if(result.success) return result.results;
-
-                    return [];
-                });
-        },
-        getCommentsByArticle: function(obj) {
-            if(!obj.parentID) obj.parentID = null;
-
-            return Comments.get(obj).$promise
-                .then(function (result) {
-
-                    if(result.success) return result;
-
-                    return [];
-                });
-        },
-        postCommentForArticle: function(data) {
-
-            return Comments.save(data).$promise
-                .then(function (result) {
-                    if(result.success) return result.results;
-
-                    return [];
-                });
-        },
-        postArticle: function(data) {
-            return Article.save(data).$promise
-                .then(function (result) {
-                    return result;
-                });
-        }
-    }
-}
-
-BlogService.$inject = ['$resource'];
-
-angular
-    .module('components.blog')
-    .factory('BlogService', BlogService);})(window.angular);
-(function(angular){
-'use strict';
-var errorPage = {
-    templateUrl: './error-page.html',
-    controller: 'ErrorPageController',
-    bindings: {
-        previousState: '<'
-    }
-};
-
-angular
-    .module('components.error-page')
-    .component('errorPage', errorPage)
-    .config(["$stateProvider", function ($stateProvider) {
-        $stateProvider
-            .state('app.error-page', {
-                /*url: '/error-page?error',*/
-                component: 'errorPage',
-                views: {
-                    '': {
-                        component: 'errorPage'
-                    }
-                },
-                params: {
-                    error: '404'
-                },
-                resolve: {
-                    previousState: [
-                        "$state",
-                        function ($state) {
-                            console.log($state.params);
-                            return {
-                                name: $state.current.name,
-                                params: angular.copy($state.params),
-                                URL: $state.href($state.current.name, $state.params)
-                            };
-                        }
-                    ]
-                },
-                data: {
-                    displayName: 'errorPage'
-                }
-            });
-    }]);})(window.angular);
-(function(angular){
-'use strict';
-function ErrorPageController ($state, $stateParams) {
-    var ctrl = this;
-    console.log($stateParams);
-    var errors = {
-        404: 'Not Found',
-        403: 'Access Denied'
-    };
-    ctrl.errorCode = $stateParams.error || 404;
-    ctrl.errorDesc = errors[$stateParams.error || 404];
-    ctrl.back = function () {
-        $state.go(ctrl.previousState.name || 'app.blog', ctrl.previousState.params || {});
-    }
-}
-
-ErrorPageController.$inject = ['$state', '$stateParams'];
-
-angular.module('components.error-page')
-    .controller('ErrorPageController', ErrorPageController);})(window.angular);
-(function(angular){
-'use strict';
-var login = {
-    templateUrl: './login.html',
-    controller: 'LoginController',
-    bindings: {
-        errors: '<',
-        previousState: '<'
-    }
-};
-
-angular
-    .module('components.login')
-    .component('login', login)
-    .config(["$stateProvider", function ($stateProvider) {
-        $stateProvider
-            .state('app.login', {
-                url: '/login?username',
-                component: 'login',
-                params: {
-                    errors: null,
-                    password: null
-                },
-                redirectIfAuth: true,
-                resolve: {
-                    'errors': ["$stateParams", function($stateParams) {
-                        console.log($stateParams);
-                        return $stateParams.errors;
-                    }],
-                    previousState: [
-                        "$state",
-                        function ($state) {
-                            console.log($state.params);
-                            return {
-                                name: $state.current.name,
-                                params: angular.copy($state.params),
-                                URL: $state.href($state.current.name, $state.params)
-                            };
-                        }
-                    ]
-                },
-                views: {
-                    '': {
-                        component: 'login'
-                    },
-                    widget: {
-                        template: 'asdf'
-                    }/*,
-                    'errors@app.login': {
-                        component: 'errorBox'
-                    }*/
-                },
-                data: {
-                    displayName: 'login'
-                }
-            });
-    }]);})(window.angular);
-(function(angular){
-'use strict';
-function LoginController (SessionService, $state, $stateParams, $scope) {
-    var ctrl = this;
-    console.log(ctrl);
-    ctrl.fields = ['username', 'password'];
-    ctrl.loginData = {
-        username: $stateParams.username || '',
-        password: $stateParams.password || '',
-    };
-    ctrl.login = function () {
-        if(!ctrl.loginData.username) return toastr.error('missing username');
-        if(!ctrl.loginData.password) return toastr.error('missing password');
-
-        SessionService.login(ctrl.loginData)
-            .then(function(res) {
-                if(res.data.success) {
-                    toastr.success('Login was successful!');
-                    $state.go(ctrl.previousState.name, ctrl.previousState.params);
-                }
-
-                if(res.data.errors) {
-                    $scope.serverErrors = ctrl.errors = res.data.errors;
-                }
-
-            });
-    };
-
-    ctrl.reload = function (){
-        $state.go('.', {errors: ['you done fucked up']})
-    }
-
-    ctrl.$onInit = function () {
-        if(ctrl.errors) $scope.serverErrors = ctrl.errors;
-    }
-
-}
-
-LoginController.$inject = ['SessionService', '$state', '$stateParams', '$scope'];
-
-angular.module('components.login')
-    .controller('LoginController', LoginController);})(window.angular);
-(function(angular){
-'use strict';
-var register = {
-    templateUrl: './register.html',
-    controller: 'RegisterController'
-};
-
-angular
-    .module('components.register')
-    .component('register', register)
-    .config(["$stateProvider", function ($stateProvider) {
-        $stateProvider
-            .state('app.register', {
-                url: '/register',
-                component: 'register',
-                redirectIfAuth: true,
-                views: {
-                    '': {
-                        component: 'register'
-                    },
-                    widget: {
-                        template: 'asdf'
-                    }
-                },
-                data: {
-                    displayName: 'register'
-                }
-            });
-    }]);})(window.angular);
-(function(angular){
-'use strict';
-function RegisterController (SessionService, $state, $scope) {
-    var ctrl = this;
-    ctrl.fields = ['username', 'password', 'confirmPassword'];
-    ctrl.registerData = {};
-    ctrl.register = function () {
-        if(!ctrl.registerData.username) return toastr.error('missing username');
-        if(!ctrl.registerData.password) return toastr.error('missing password');
-        if(!ctrl.registerData.confirmPassword) return toastr.error('missing confirmPassword');
-
-        SessionService.signup(ctrl.registerData)
-            .then(function (res) {
-                if(res.data.success) {
-                    toastr.success('Registration was successful!');
-                    $state.go('app.blog');
-                }
-
-                if(res.data.errors) {
-                    $scope.serverErrors = ctrl.errors = res.data.errors;
-                }
-            });
-
-
-    };
-}
-
-RegisterController.$inject = ['SessionService', '$state', '$scope'];
-
-angular.module('components.register')
-    .controller('RegisterController', RegisterController);})(window.angular);
-(function(angular){
-'use strict';
 var article = {
     bindings: {
         'article': '<'
@@ -1124,6 +1137,91 @@ angular
 (function(angular){
 'use strict';
 var articlePage = {
+    bindings: {
+        'article': '<',
+        'comments': '<'
+    },
+    templateUrl: './article-page.html',
+    controller: 'ArticlePageController'
+};
+
+angular
+    .module('components.blog')
+    .component('articlePage', articlePage)
+    .config(["$stateProvider", "$urlRouterProvider", "$transitionsProvider", function ($stateProvider, $urlRouterProvider, $transitionsProvider) {
+        $stateProvider
+            .state('app.article', {
+                abstract: true,
+                url: '/article',
+                data: {
+                    breadcrumbProxy: 'app.blog'
+                }
+            })
+            .state('app.article.view', {
+                url: '/{articleID:[0-9]+}',
+                component: 'articlePage',
+                resolve: {
+                    article: ["$transition$", "BlogService", function ($transition$, BlogService) {
+                        console.log("asdf!!!");
+                        var key = $transition$.params().articleID;
+                        return BlogService.getArticleById(key);
+                    }],
+                    comments: ["$transition$", "BlogService", function ($transition$, BlogService) {
+                        var key = $transition$.params().articleID;
+                        return BlogService.getCommentsByArticle({
+                            articleID: key
+                        });
+                    }]
+                },
+                views: {
+                    '@app' : {
+                        component: 'articlePage'
+                    }
+                },
+                data: {
+                    displayName: '{{article.articleID}}'
+                }
+            })
+            .state('app.article.view.edit', {
+                url: '/edit',
+                component: 'articleCreate',
+                resolve: {
+                    article: ["$transition$", "BlogService", function ($transition$, BlogService) {
+                        var key = $transition$.params().articleID;
+                        return BlogService.getArticleById(key);
+                    }]
+                },
+                requiresAdmin: true,
+                views: {
+                    '@app' : {
+                        component: 'articleCreate'
+                    }/*,
+                    'widget@app': {
+                        template: '<ui-breadcrumbs displayname-property="data.displayName" ' +
+                        'template-url="./uiBreadcrumbs.tpl.html" abstract-proxy-property="data.breadcrumbProxy"></ui-breadcrumbs>'
+                    }*/
+                },
+                data: {
+                    displayName: 'article edit'
+                }
+            });
+    }]);})(window.angular);
+(function(angular){
+'use strict';
+function ArticlePageController(BlogService, SessionService, $state) {
+    var ctrl = this;
+    ctrl.pendingComment = '';
+
+}
+
+ArticlePageController.$inject = ['BlogService', 'SessionService', '$state'];
+
+angular
+    .module('components.blog')
+    .controller('ArticlePageController', ArticlePageController);})(window.angular);
+(function(angular){
+'use strict';
+var articlePage = {
     templateUrl: './article-create.html',
     controller: 'ArticleCreateController',
     bindings: {
@@ -1217,90 +1315,6 @@ ArticleCreateController.$inject = ['ArticleService', 'SessionService', 'marked',
 angular
     .module('components.blog')
     .controller('ArticleCreateController', ArticleCreateController);})(window.angular);
-(function(angular){
-'use strict';
-var articlePage = {
-    bindings: {
-        'article': '<',
-        'comments': '<'
-    },
-    templateUrl: './article-page.html',
-    controller: 'ArticlePageController'
-};
-
-angular
-    .module('components.blog')
-    .component('articlePage', articlePage)
-    .config(["$stateProvider", "$urlRouterProvider", "$transitionsProvider", function ($stateProvider, $urlRouterProvider, $transitionsProvider) {
-        $stateProvider
-            .state('app.article', {
-                abstract: true,
-                url: '/article',
-                data: {
-                    breadcrumbProxy: 'app.blog'
-                }
-            })
-            .state('app.article.view', {
-                url: '/{articleID:[0-9]+}',
-                component: 'articlePage',
-                resolve: {
-                    article: ["$transition$", "BlogService", function ($transition$, BlogService) {
-                        var key = $transition$.params().articleID;
-                        return BlogService.getArticleById(key);
-                    }],
-                    comments: ["$transition$", "BlogService", function ($transition$, BlogService) {
-                        var key = $transition$.params().articleID;
-                        return BlogService.getCommentsByArticle({
-                            articleID: key
-                        });
-                    }]
-                },
-                views: {
-                    '@app' : {
-                        component: 'articlePage'
-                    }
-                },
-                data: {
-                    displayName: '{{article.articleID}}'
-                }
-            })
-            .state('app.article.view.edit', {
-                url: '/edit',
-                component: 'articleCreate',
-                resolve: {
-                    article: ["$transition$", "BlogService", function ($transition$, BlogService) {
-                        var key = $transition$.params().articleID;
-                        return BlogService.getArticleById(key);
-                    }]
-                },
-                requiresAdmin: true,
-                views: {
-                    '@app' : {
-                        component: 'articleCreate'
-                    }/*,
-                    'widget@app': {
-                        template: '<ui-breadcrumbs displayname-property="data.displayName" ' +
-                        'template-url="./uiBreadcrumbs.tpl.html" abstract-proxy-property="data.breadcrumbProxy"></ui-breadcrumbs>'
-                    }*/
-                },
-                data: {
-                    displayName: 'article edit'
-                }
-            });
-    }]);})(window.angular);
-(function(angular){
-'use strict';
-function ArticlePageController(BlogService, SessionService, $state) {
-    var ctrl = this;
-    ctrl.pendingComment = '';
-
-}
-
-ArticlePageController.$inject = ['BlogService', 'SessionService', '$state'];
-
-angular
-    .module('components.blog')
-    .controller('ArticlePageController', ArticlePageController);})(window.angular);
 (function(angular){
 'use strict';
 var blog = {

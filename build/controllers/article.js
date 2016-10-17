@@ -46,19 +46,15 @@ router.route('/').get(function (req, res) {
 });
 router.route('/:articleID').get(function (req, res) {
     Article.model.forge().query({ where: { articleID: req.params['articleID'] } }).fetch({ withRelated: ['user', 'comments'] }).then(function (collection) {
-        if (!collection) {
-            res.status(404).json({
-                success: false,
-                message: 'Article does not exist.'
-            });
-        }
+        console.log(collection);
+        if (!collection) throw new Error('Article doesn\'t exist');
 
         res.json({
             success: true,
             results: collection.toJSON()
         });
     }).catch(function (err) {
-        res.status(500).json({
+        res.json({
             success: false,
             message: err.message
         });

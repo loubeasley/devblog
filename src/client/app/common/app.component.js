@@ -36,6 +36,14 @@ angular
             return $location.path();
         });
 
+        //send error msg to error page
+        $transitionsProvider.onError({ to: function (state) { return true }},
+            function ($transition$) {
+                console.log('ERROR');
+                return $transition$.router.stateService.go('app.error-page', {error: 404})
+
+            });
+
         $transitionsProvider.onStart({ to: function (state) { return state.requiresAdmin }},
             function ($transition$) {
 
@@ -58,4 +66,9 @@ angular
                         $transition$.router.stateService.go('app.logged-in');
                     })
             });
+    })
+    .run(function ($state) {
+        $state.defaultErrorHandler(function() {
+            // Do not log transitionTo errors
+        });
     });
