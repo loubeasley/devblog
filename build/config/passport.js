@@ -55,7 +55,7 @@ function localSignup(req, username, password, done) {
         });
 
         User.model.create({ username: username, password: password }).asCallback(function (err, user) {
-            console.log("blarg!", user);
+            console.log(err);
             return done(null, user.toJSON());
         });
     });

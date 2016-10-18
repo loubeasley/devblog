@@ -5,10 +5,10 @@ const connections = {
     production: {
         client: 'mysql',
         connection: {
-            host: 'd5x4ae6ze2og6sjo.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-            user: 'mxpzuc8vc2j244zm',
-            password: 'mrfdv4oie28nniis',
-            database: 'nbr16jqlmdzdgt6l',
+            host: 'nt71li6axbkq1q6a.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+            user: 'fi7jkxtj94gpzuow',
+            password: 'v4xtcyrx27f4ho9k',
+            database: 'uy5d6q1uth4xzbs8',
             charset: 'utf8'
         }
     },

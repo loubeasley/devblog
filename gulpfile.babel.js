@@ -156,7 +156,7 @@ gulp.task('watch', ['nodemon'], () => {
 });
 
 gulp.task('set-dev-node-env', function() {
-    return process.env.NODE_ENV = 'development';
+    return process.env.NODE_ENV = 'production';
 });
 
 gulp.task('default', [
@@ -171,6 +171,7 @@ gulp.task('default', [
 ]);
 
 gulp.task('production', [
+    'set-dev-node-env',
     'copy',
     'styles',
     'scripts',
