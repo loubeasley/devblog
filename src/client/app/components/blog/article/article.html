@@ -9,7 +9,7 @@
         Posted on {{::$ctrl.article.createdAt | date}} by <a>{{::$ctrl.article.user.username}}</a>
         <div class="article-admin-ctrl" ng-if="$root.session.role.roleID == 2">
             <button class="btn btn-primary btn-xs" title="edit" ui-sref="app.article.view.edit({articleID: $ctrl.article.articleID})"><span class="fa fa-pencil"></span></button>
-            <button class="btn btn-danger btn-xs" title="remove"><span class="fa fa-trash"></span></button>
+            <button class="btn btn-danger btn-xs" title="remove" ng-click="$ctrl.deleteArticle()"><span class="fa fa-trash"></span></button>
         </div>
     </div>
 

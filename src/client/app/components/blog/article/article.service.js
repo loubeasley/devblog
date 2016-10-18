@@ -28,6 +28,9 @@ function ArticleService($resource) {
         },
         updateArticle: function(id, data) {
             return Article.update(id, data).$promise
+        },
+        deleteArticle: function(data) {
+            return Article.remove(data).$promise
         }
     }
 }

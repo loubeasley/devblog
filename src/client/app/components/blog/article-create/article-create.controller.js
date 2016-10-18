@@ -14,38 +14,25 @@ function ArticleCreateController(ArticleService, SessionService, marked, $state)
     };
 
     ctrl.postArticle = function() {
-        if(ctrl.article) return ArticleService.updateArticle({articleID: ctrl.article.articleID},
-            {
-                title: ctrl.articleTitle,
-                body: ctrl.articleBody,
-                userID: SessionService.currentSession().userID
+        if(!SessionService.isAuthenticated()) return toastr.warning('You need to be logged in.');
 
-            })
+        var body = {
+            title: ctrl.articleTitle || null,
+            body: ctrl.articleBody || null,
+            userID: SessionService.currentSession().userID || null
+        };
+
+        (ctrl.article ?
+            ArticleService.updateArticle({articleID: ctrl.article.articleID}, body) :
+            ArticleService.postArticle(body))
             .then(function (res) {
-                console.log(res);
-                if(res.success) {
-                    $state.go('app.article.view', {articleID: ctrl.article.articleID}, {reload: true});
-                    toastr.success('Article updated successfully!');
-                    ctrl.article = res.results;
-                    return;
-                }
-
-                toastr.error(res.message || 'Something went wrong!');
-            });
-
-        return ArticleService.postArticle({
-            title: ctrl.articleTitle,
-            body: ctrl.articleBody,
-            userID: SessionService.currentSession().userID
-        })
-            .then(function (res) {
-                if(res.success) {
-                    $state.go('article', {id: res.results});
+                if (res.success) {
                     toastr.success('Article posted successfully!');
-                    return;
+                    return $state.go('app.article.view', {articleID: res.results.articleID}, {reload: true});
                 }
 
                 toastr.error(res.message || 'Something went wrong!');
+                return null;
             });
     }
 

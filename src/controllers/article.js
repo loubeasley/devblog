@@ -100,10 +100,9 @@ router.route('/:articleID')
             .fetch({require: true})
             .then(function (article) {
                 if (!article) {
-                    res.status(404)
-                        .json({
+                    res.json({
                             success: false,
-                            message: 'User does not exist.'
+                            message: 'Article does not exist.'
                         });
                 }
 
@@ -117,7 +116,10 @@ router.route('/:articleID')
                 });
             })
             .catch(function (err) {
-                res.status(500).json({error: true, data: {message: err.message}});
+                res.json({
+                    success: false,
+                    message: 'Article does not exist.'
+                });
             });
     });
 
