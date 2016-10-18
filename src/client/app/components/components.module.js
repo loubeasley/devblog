@@ -3,5 +3,6 @@ angular
         'components.blog',
         'components.register',
         'components.login',
-        'components.error-page'
+        'components.error-page',
+        'components.about-page'
     ]);

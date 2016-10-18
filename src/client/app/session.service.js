@@ -11,30 +11,43 @@ function SessionService($http, $rootScope, $q) {
         return _session;
     }
 
-    return {
+    var _service = {
         getSession: function(force) {
-            var deferred = $q.defer();
+            console.log('begin getting session');
+            var deferredSession = $q.defer();
 
             if (force === true) updateSession(undefined);
 
-            if (!angular.isDefined(_session))
-                $http.get('/api/session')
-                    .then(function(res) {
-                        var tempSess = res.data.session || null;
-                        console.log(tempSess);
+            deferredSession.resolve(!angular.isDefined(_session) ? $http.get('/api/session') : {
+                data: {
+                    success: !!_session,
+                    session: _session
+                }
+            });
 
-                        /*if(res.data.success && tempSess) {
-                            if(tempSess.role !== 1 || tempSess.role !== 2)
-                                tempSess.role = USER_ROLE;
-                        }*/
-
-                        updateSession(tempSess);
-
-                    });
-
-            deferred.resolve(_session);
-
-            return deferred.promise;
+            return deferredSession.promise
+                .then(function (res) {
+                    return $q(function(resolve, reject) {
+                        updateSession(res.data.session || null);
+                        if(res.data.success) {
+                            resolve(_session);
+                        } else reject({status: 204, message: 'User not authenticated'});
+                    })
+                });
+        },
+        getAuthorize: function() {
+            return _service.getSession()
+                .then(function() {
+                    if(_service.isAuthenticated() && _service.isAdmin())
+                        return $q.when({
+                            success: true,
+                            session: _session
+                        });
+                    else return $q.reject({
+                        status: 403,
+                        message: 'User not authorized'
+                    })
+                })
         },
         isResolved: function () {
             return angular.isDefined(_session);
@@ -79,7 +92,9 @@ function SessionService($http, $rootScope, $q) {
         currentSession: function () {
             return _session;
         }
-    }
+    };
+
+    return _service;
 }
 
 SessionService.$inject = ['$http', '$rootScope', '$q'];

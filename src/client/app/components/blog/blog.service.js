@@ -1,4 +1,4 @@
-function BlogService($resource) {
+function BlogService($resource, $q) {
     var Article = $resource('/api/article/:id', {articleID: '@id'});
     var Comments = $resource('/api/comments');
     return {
@@ -13,9 +13,14 @@ function BlogService($resource) {
         getArticleById: function (key) {
             return Article.get({id: key}).$promise
                 .then(function (result) {
-                    if(result.success) return result.results;
-                    console.log('rejected');
-                    throw new Error('Article doesn\'t exist!');
+                    //if(result.success) return result.results;
+                    //console.log('rejected');
+                    //throw new Error('Article doesn\'t exist!');
+
+                    return $q(function(resolve, reject) {
+                        if(result.success) resolve(result.results);
+                        else reject({status: 404, message: 'Article not found!'})
+                    });
                 });
         },
         getCommentsByArticle: function(obj) {
@@ -47,7 +52,7 @@ function BlogService($resource) {
     }
 }
 
-BlogService.$inject = ['$resource'];
+BlogService.$inject = ['$resource', '$q'];
 
 angular
     .module('components.blog')

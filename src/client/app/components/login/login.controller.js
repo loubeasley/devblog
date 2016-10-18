@@ -1,6 +1,5 @@
-function LoginController (SessionService, $state, $stateParams, $scope) {
+function LoginController (SessionService, $state, $stateParams, $scope, ErrorPageService) {
     var ctrl = this;
-    console.log(ctrl);
     ctrl.fields = ['username', 'password'];
     ctrl.loginData = {
         username: $stateParams.username || '',
@@ -14,7 +13,11 @@ function LoginController (SessionService, $state, $stateParams, $scope) {
             .then(function(res) {
                 if(res.data.success) {
                     toastr.success('Login was successful!');
-                    $state.go(ctrl.previousState.name, ctrl.previousState.params);
+                    if(ErrorPageService.afterLoginRedirect) {
+                        ctrl.previousState = ErrorPageService.afterLoginRedirect;
+                        console.log(ctrl.previousState);
+                    }
+                    $state.go(ctrl.previousState.name, ctrl.previousState.params, {reload: true});
                 }
 
                 if(res.data.errors) {
@@ -26,15 +29,18 @@ function LoginController (SessionService, $state, $stateParams, $scope) {
 
     ctrl.reload = function (){
         $state.go('.', {errors: ['you done fucked up']})
-    }
+    };
 
     ctrl.$onInit = function () {
         if(ctrl.errors) $scope.serverErrors = ctrl.errors;
-    }
+
+    };
+
+
 
 }
 
-LoginController.$inject = ['SessionService', '$state', '$stateParams', '$scope'];
+LoginController.$inject = ['SessionService', '$state', '$stateParams', '$scope', 'ErrorPageService'];
 
 angular.module('components.login')
     .controller('LoginController', LoginController);

@@ -12,7 +12,7 @@ angular
     .config(function ($stateProvider) {
         $stateProvider
             .state('app.error-page', {
-                /*url: '/error-page?error',*/
+                url: '/error-page?error',
                 component: 'errorPage',
                 views: {
                     '': {
@@ -20,7 +20,9 @@ angular
                     }
                 },
                 params: {
-                    error: '404'
+                    error: '404',
+                    message: 'You took a wrong turn!',
+                    previousState: null
                 },
                 resolve: {
                     previousState: [

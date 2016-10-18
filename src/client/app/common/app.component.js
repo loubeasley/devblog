@@ -20,11 +20,16 @@ angular
                 component: 'app',
                 resolve: {
                     session: function(SessionService) {
-                        return SessionService.getSession();
+                        console.log("start session resolve");
+                        return SessionService.getSession()
+                            .catch(function(err) {
+                                console.log(err);
+                            });
                     }
                 }
             })
             .state('app.logged-in', {
+                url: '/logged-in',
                 template: '<div class="col-md-12 text-center"><h2>You are logged in as: <strong>{{$root.session.username}}</strong></h2></div>'
             });
 
@@ -37,33 +42,42 @@ angular
         });
 
         //send error msg to error page
-        $transitionsProvider.onError({ to: function (state) { return true }},
+        $transitionsProvider.onError({},
             function ($transition$) {
-                console.log('ERROR');
-                return $transition$.router.stateService.go('app.error-page', {error: 404})
+                $transition$.promise
+                    .catch(function(err) {
+                        if(err.hasOwnProperty('status') && err.status == 404)
+                            return $transition$.router.stateService.go('app.error-page', {
+                                error: 404,
+                                message: err.message
+                            });
 
-            });
-
-        $transitionsProvider.onStart({ to: function (state) { return state.requiresAdmin }},
-            function ($transition$) {
-
-                return $transition$.injector().get('AuthorizeService').authorize()
-                    .catch(function (err) {
-                        $transition$.router.stateService.go('app.error-page', {error: 403});
+                        return null;
                     })
             });
 
-        $transitionsProvider.onStart({ to: function (state) { return state.redirectIfAuth }},
+        $transitionsProvider.onBefore({ to: function (state) { return state.requiresAdmin }},
             function ($transition$) {
-                var sessionService = $transition$.injector().get('SessionService');
-                var deferred = $transition$.injector().get('$q').defer();
-
-                if(sessionService.isAuthenticated()) deferred.reject();
-                else deferred.resolve();
-
-                return deferred.promise
+                console.log(angular.copy($transition$.router.stateService));
+                return $transition$.injector().get('SessionService').getAuthorize()
                     .catch(function (err) {
-                        $transition$.router.stateService.go('app.logged-in');
+                        $transition$.router.stateService.go('app.error-page', {
+                            error: 403,
+                            message: 'You do not have the proper permissions to access this page.'
+                        });
+                    })
+            });
+
+
+        $transitionsProvider.onBefore({ to: function (state) { return state.redirectIfAuth }},
+            function ($transition$) {
+                return $transition$.injector().get('SessionService').getSession()
+                    .then(function (res) {
+                        console.log(res);
+                        return $transition$.router.stateService.go('app.logged-in');
+                    })
+                    .catch(function (err) {
+                        return null;
                     })
             });
     })

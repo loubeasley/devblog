@@ -14,8 +14,7 @@
                        ng-pattern="/^[A-Za-z0-9_@.]*$/"
                        minlength="3"
                        maxlength="20"
-                       ng-model="$ctrl.registerData.username"
-                       ng-model-options="{'updateOn' : 'mouseup blur'}"/>
+                       ng-model="$ctrl.registerData.username""/>
             </div>
 
             <div class="form-group no-margin"
@@ -27,8 +26,7 @@
                        required
                        minlength="8"
                        maxlength="40"
-                       ng-model="$ctrl.registerData.password"
-                       ng-model-options="{'updateOn' : 'mouseup blur'}"/>
+                       ng-model="$ctrl.registerData.password"/>
             </div>
 
             <div class="form-group"
@@ -39,8 +37,7 @@
                        name="confirmPassword"
                        required
                        compare-to="$ctrl.registerData.password"
-                       ng-model="$ctrl.registerData.confirmPassword"
-                       ng-model-options="{'updateOn' : 'mouseup blur'}" />
+                       ng-model="$ctrl.registerData.confirmPassword"/>
             </div>
             <div ng-messages="registerForm.username.$error"
                  ng-if="registerForm.username.$dirty && registerForm.username.$invalid">

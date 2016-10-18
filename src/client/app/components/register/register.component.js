@@ -15,9 +15,6 @@ angular
                 views: {
                     '': {
                         component: 'register'
-                    },
-                    widget: {
-                        template: 'asdf'
                     }
                 },
                 data: {

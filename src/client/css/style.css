@@ -348,6 +348,7 @@ reply-box .reply-box-cancel-btn:hover {
     border: 1px dotted;
     padding: 15px;
     text-align: center;
+    margin-top: 9px;
 }
 
 .bigger-text {

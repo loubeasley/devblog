@@ -22,13 +22,11 @@ angular
                 redirectIfAuth: true,
                 resolve: {
                     'errors': function($stateParams) {
-                        console.log($stateParams);
                         return $stateParams.errors;
                     },
                     previousState: [
                         "$state",
                         function ($state) {
-                            console.log($state.params);
                             return {
                                 name: $state.current.name,
                                 params: angular.copy($state.params),
@@ -40,10 +38,10 @@ angular
                 views: {
                     '': {
                         component: 'login'
-                    },
+                    }/*,
                     widget: {
                         template: 'asdf'
-                    }/*,
+                    },
                     'errors@app.login': {
                         component: 'errorBox'
                     }*/
