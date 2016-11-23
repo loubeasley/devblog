@@ -1,37 +1,12 @@
-function ArticleCommentsChildrenController (BlogService, SessionService) {
+function ArticleCommentsChildrenController (BlogService, SessionService, $location, $anchorScroll, $scope) {
     var ctrl = this;
-
-
-
-    ctrl.$onInit = function() {
-        //console.log(ctrl);
-        /*BlogService.getCommentsByArticle({
-            articleID: ctrl.article.articleID,
-            parentID: ctrl.parentId
-        })
-            .then(function(response) {
-                console.log(response);
-                ctrl.comments = response.results || [];
-            });*/
-    };
-
-    ctrl.postComment = function() {
-        if(ctrl.pendingComment.length == 0 || ctrl.pendingComment.length > 255) return;
-
-        BlogService.postCommentForArticle({
-            articleID: ctrl.article.articleID,
-            body: ctrl.pendingComment,
-            userID: SessionService.currentSession().userID
-        })
-            .then(function (results) {
-                //console.log(results);
-                ctrl.comments.unshift(results);
-            });
+    ctrl.hidden = ctrl.parentId != 'root';
+    ctrl.onPost = function () {
+        $scope.$emit('postComment', 'asdf');
     }
-
 }
 
-ArticleCommentsChildrenController.$inject = ['BlogService', 'SessionService'];
+ArticleCommentsChildrenController.$inject = ['BlogService', 'SessionService', '$location', '$anchorScroll', '$scope'];
 
 angular
     .module('components.blog')

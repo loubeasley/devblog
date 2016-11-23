@@ -1,23 +1,66 @@
-
 <div class="children" ng-if="$ctrl.comments.length > 0">
+    <!--<div class="children" ng-if="$ctrl.comments.length > 0" > --->
 
-    <div class="comment" ng-repeat="comment in $ctrl.comments" >
+    <div class="comment" ng-repeat="comment in $ctrl.comments" ng-init="comment.hidden = true">
 
-        <div class="caption" ng-click="comment.try = !comment.try">
-            <div class="comment-body" ng-class="::{'user-comment' : comment.userID == $root.session.userID}" >
+        <div class="caption"
+             id="{{'article-' + comment.articleID + '-comment-' + comment.commentID}}"
+             ng-class="::{'user-comment' : comment.userID == $root.session.userID}">
+
+            <div class="comment-body" ng-click="comment.hidden=!comment.hidden"
+                 ng-class="{'clickable' : comment.replies.length > 0}">
+
                 <div class="author">
                     <a>{{::comment.user.username}}</a><span class="comment-spacer">{{::comment.createdAt | date:'short'}}</span>
                 </div>
+
                 <span marked="::comment.body"></span>
-                <div class="text-right">
-                    <reply-button comment="comment" article="$ctrl.article"></reply-button>
+
+
+            </div>
+            <div class="comment-reply-area">
+                <reply-button comment="comment" article="$ctrl.article" on-post="$ctrl.onPost()"></reply-button>
+            </div>
+
+            <div class="comment-info">
+
+                <div class="comment-reply" ng-if="comment.replies.length > 0">
+                    <a class="white-links"
+                       ng-click="comment.hidden=!comment.hidden">
+                        {{comment.hidden ? '+ show replies' : '- hide replies'}}
+                    </a>
                 </div>
             </div>
             <!--<span ng-if="::comment.replyCount > 0">{{comment.replyCount}} replies</span>-->
+            <!--<div class="comment-info">
+
+                <div class="comment-reply">
+                    <a class="white-links" ng-if="comment.replies.length > 0"
+                       ng-click="comment.hidden=!comment.hidden">
+                        {{comment.hidden ? '+ show replies' : '- hide replies'}}
+                    </a>
+                </div>
+
+                <div class="pull-right">
+                    <reply-button comment="comment" article="$ctrl.article"></reply-button>
+                </div>
+                <div class="clearfix"></div>
+            </div>-->
         </div>
-        <div id="{{'commentid-' + comment.commentID + '-reply-box'}}"></div>
-        <span>
-            <article-comments-children article="$ctrl.article" comments="comment.replies" parent-id="comment.commentID"></article-comments-children>
-        </span>
+
+        <div class="comment-nested-helper">
+
+            <div id="{{'commentid-' + comment.commentID + '-reply-box'}}"></div>
+            <div class="hider" ng-if="!comment.hidden">
+                <article-comments-children
+                    style="display: block"
+                    article="$ctrl.article"
+                    comments="comment.replies"
+                    parent-id="comment.commentID"
+                    hide-bool="$ctrl.hidden">
+                </article-comments-children>
+            </div>
+        </div>
+
     </div>
 </div>

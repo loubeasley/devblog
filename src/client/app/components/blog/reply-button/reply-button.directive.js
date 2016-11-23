@@ -1,11 +1,13 @@
 function replyButton() {
     return {
         restrict: 'E',
-        template: '<a ng-click="$ctrl.addReplyBox()">reply</a>',
+        //template: '<a ng-click="$ctrl.addReplyBox()">reply</a>',
+        templateUrl: './reply-button.html',
         controllerAs: '$ctrl',
         scope: {
             comment: '<',
-            article: '<'
+            article: '<',
+            onPost: '&'
         },
         bindToController: true,
         controller: function($scope, $element, $compile) {

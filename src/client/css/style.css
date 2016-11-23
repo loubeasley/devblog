@@ -109,21 +109,36 @@ article .avatar {
 
 .comment-info {
     margin-bottom: 10px;
+    /*background-color: #101010;*/
 }
 
-.comment-body.user-comment {
+.white-links {
+    color: white;
+    font-size: 9pt;
+    font-weight: normal;
+}
+
+.caption {
+    position: relative;
+}
+
+.caption.user-comment {
     border-left: 2px solid green;
+}
+
+.comment-reply-area {
+    position: absolute;
+    right: 0;
+    bottom: 1px;
 }
 .comment-body .author {
     font-size: 12px;
-
     margin-bottom: 5px;
 }
 
 .comment-body {
     background-color: #1a1a1a;
-    padding: 20px;
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
     padding: 10px 15px 15px 15px;
 }
 
@@ -152,6 +167,10 @@ article .avatar {
 
 .children .comment-create {
     margin-left: 40px;
+}
+
+.comment-nested-helper {
+    border-left: 1px dotted rgba(255, 255, 255, 0.18);
 }
 
 a {
@@ -354,3 +373,76 @@ reply-box .reply-box-cancel-btn:hover {
 .bigger-text {
     font-size: 20px;
 }
+
+.reply-button {
+    padding: 2px 7px;
+}
+
+.comment-reply {
+    padding: 2px 7px;
+    /*float: left;*/
+    background-color: #101010;
+}
+.clickable {
+    cursor: pointer;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+.pulse:hover {
+    animation: none;
+}
+
+*.ng-enter {
+    opacity: 0;
+    transition: all .5s ease;
+}
+*.ng-enter.ng-enter-active {
+    opacity: 1;
+}
+
+*.ng-leave {
+    transition: 0.5s linear all;
+    opacity:1;
+}
+*.ng-leave.ng-leave-active {
+    opacity:0;
+}
+
+.comment.ng-enter {
+    opacity: 0;
+    transition: all .5s ease;
+}
+.comment.ng-enter-active {
+    opacity: 1;
+    animation: pulse 2s 3;
+}
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(4, 204, 0, 0.4);
+    }
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    }
+}
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(21, 204, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(28, 204, 0, 0.4);
+    }
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+        box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+    }
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+        box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    }
+}
+
+/*-------------*/

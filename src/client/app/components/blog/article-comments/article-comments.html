@@ -1,7 +1,7 @@
 <div class="comments-container">
     <div class="comment-create" ng-switch="!!$root.session">
         <div ng-switch-when="true">
-            <textarea placeholder="Write a comment..."
+            <!--<textarea placeholder="Write a comment..."
                       data-ng-model="$ctrl.pendingComment"
                       id="first" data-ng-show="show"
                       ng-init="show = true"
@@ -11,7 +11,8 @@
                 <button class="btn-sm btn btn-default right" ng-click="$ctrl.postComment()" ng-init="thing = 0">Post
                 </button>
                 <div class="clearfix"></div>
-            </div>
+            </div>-->
+            <reply-box></reply-box>
         </div>
         <div ng-switch-default class="comment-nologin-info">
             <h3 class="no-margin text-center"><span class="fa fa-warning"></span> <a ui-sref="app.login">Sign in</a> to post a comment!</h3>

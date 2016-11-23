@@ -8,7 +8,7 @@ angular
         'directives',
         'angularUtils.directives.uiBreadcrumbs',
         /*'monospaced.elastic',*/
-        'hc.marked', 'hljs', 'angular-markdown-editor'])
+        'hc.marked', 'hljs', 'angular-markdown-editor', 'duScroll'])
     .config(['markedProvider', 'hljsServiceProvider', function(markedProvider, hljsServiceProvider) {
         // marked config
         markedProvider.setOptions({

@@ -34,6 +34,7 @@ const paths = {
         'angular-animate/angular-animate.js',
         'angular-sanitize/angular-sanitize.js',
         'angular-messages/angular-messages.js',
+        'angular-scroll/angular-scroll.min.js',
         'angular-ui-router/release/angular-ui-router.js',
         'marked/lib/marked.js',
         'angular-marked/dist/angular-marked.min.js',
@@ -156,7 +157,7 @@ gulp.task('watch', ['nodemon'], () => {
 });
 
 gulp.task('set-dev-node-env', function() {
-    return process.env.NODE_ENV = 'production';
+    return process.env.NODE_ENV = 'development';
 });
 
 gulp.task('default', [

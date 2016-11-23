@@ -1,4 +1,4 @@
-function ArticleCommentsController (BlogService, SessionService, marked, $scope) {
+function ArticleCommentsController (BlogService, SessionService, marked, $scope, $location, $anchorScroll) {
     var ctrl = this;
 
     ctrl.$onInit = function() {
@@ -11,14 +11,23 @@ function ArticleCommentsController (BlogService, SessionService, marked, $scope)
     };
 
     ctrl.postComment = function() {
-        BlogService.postCommentForArticle({
-            articleID: ctrl.article.articleID,
-            body: ctrl.pendingComment,
-            userID: SessionService.currentSession().userID
-        })
-            .then(function (results) {
-                //console.log(results);
-                ctrl.comments.unshift(results);
+        SessionService.getSession()
+            .then(function (session) {
+                return BlogService.postCommentForArticle({
+                    articleID: ctrl.article.articleID,
+                    body: ctrl.pendingComment,
+                    userID: session.userID
+                })
+                    .then(function (results) {
+                        ctrl.pendingComment = '';
+                        ctrl.comments.unshift(results);
+
+                        $location.hash('article-' + results.articleID + '-comment-' + results.commentID);
+                        $anchorScroll();
+                    });
+            })
+            .catch(function(err){
+                toastr.error(err.message);
             });
     };
 
@@ -60,8 +69,11 @@ function ArticleCommentsController (BlogService, SessionService, marked, $scope)
 
 }
 
-ArticleCommentsController.$inject = ['BlogService', 'SessionService', 'marked', '$scope'];
+ArticleCommentsController.$inject = ['BlogService', 'SessionService', 'marked', '$scope', '$location', '$anchorScroll'];
 
 angular
     .module('components.blog')
+    .run(['$anchorScroll', function($anchorScroll) {
+        $anchorScroll.yOffset = 150;   // always scroll by 50 extra pixels
+    }])
     .controller('ArticleCommentsController', ArticleCommentsController);

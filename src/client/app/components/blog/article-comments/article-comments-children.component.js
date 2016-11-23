@@ -5,7 +5,8 @@ var articleCommentsChildren = {
         article: '<',
         comments: '<',
         onPostComment: '&',
-        parentId: '<'
+        parentId: '<',
+        hideBool: '='
     }
 };
 

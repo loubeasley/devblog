@@ -14,22 +14,16 @@ var replyBox = {
         };
 
         ctrl.postComment = function() {
-            BlogService.postCommentForArticle({
+            $scope.$emit('postComment', {
                 articleID: ctrl.article.articleID,
                 body: ctrl.pendingComment,
-                userID: SessionService.currentSession().userID,
-                parentID: ctrl.comment.commentID
-            })
-                .then(function (results) {
-                    if(!ctrl.comment.replies) ctrl.comment.replies = [];
-                    ctrl.comment.replies.push(results);
+                parentID: ctrl.comment ? ctrl.comment.commentID : null,
+                reference: ctrl.comment,
+                successCallback: function () {
+                    ctrl.pendingComment = '';
                     ctrl.hideFn();
-                    $scope.$emit('updateComments', {
-                        article: ctrl.article,
-                        parent: ctrl.comment,
-                        comment: results
-                    })
-                });
+                }
+            });
         }
     }
 };

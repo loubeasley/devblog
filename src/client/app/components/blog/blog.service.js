@@ -29,7 +29,7 @@ function BlogService($resource, $q) {
             return Comments.get(obj).$promise
                 .then(function (result) {
 
-                    if(result.success) return result;
+                    if(result.success) return result.results;
 
                     return [];
                 });
