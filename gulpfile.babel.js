@@ -161,7 +161,7 @@ gulp.task('set-dev-node-env', function() {
 });
 
 gulp.task('default', [
-    'set-dev-node-env',
+    /*'set-dev-node-env',*/
     /*'babel',*/
     'copy',
     'styles',
