@@ -5,6 +5,7 @@ angular
         'ngAnimate',
         'ngSanitize',
         'ngMessages',
+        'ngTouch',
         'directives',
         'angularUtils.directives.uiBreadcrumbs',
         /*'monospaced.elastic',*/
@@ -26,6 +27,12 @@ angular
                 } else {
                     return hljs.highlightAuto(code).value;
                 }
+            }
+        });
+
+        markedProvider.setRenderer({
+            table: function(header, body) {
+                return '<table class="table table-condensed table-bordered">' + header + body + '</table>';
             }
         });
 

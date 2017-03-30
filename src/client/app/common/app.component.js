@@ -13,7 +13,7 @@ angular
         $stateProvider
             .state('app', {
                 abstract: true,
-                redirectTo: 'blog',
+                redirectTo: 'inventory',
                 data: {
                     requiredAuth: true
                 },
@@ -36,7 +36,7 @@ angular
         $urlRouterProvider.otherwise(function($injector, $location){
             var state = $injector.get('$state');
             if($location.path() === ' ' || $location.path() === '') {
-                state.go('app.blog');
+                state.go('app.inventory');
             } else state.go('app.error-page', {error: 404});
             return $location.path();
         });

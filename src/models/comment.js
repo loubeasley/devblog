@@ -11,8 +11,8 @@ let Comment = bookshelf.model('Comment', {
     },
     reply: function() {
         return this.hasMany(bookshelf.model('Comment'), 'parentID');
-    }
-    //hasTimestamps: true,
+    },
+    hasTimestamps: false
 });
 
 let CommentCollection = bookshelf.collection('Comment', {

@@ -4,5 +4,7 @@ angular
         'components.register',
         'components.login',
         'components.error-page',
-        'components.about-page'
+        'components.inventory',
+        'components.about-page' +
+        ''
     ]);

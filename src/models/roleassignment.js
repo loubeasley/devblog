@@ -5,7 +5,8 @@ var RoleAssignment = bookshelf.model('RoleAssignment', {
     idAttribute: 'roleassignmentID',
     user: function() {
         return this.belongsTo(bookshelf.model('User'), 'userID');
-    }
+    },
+    hasTimestamps: false
 
 });
 

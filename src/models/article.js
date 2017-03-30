@@ -13,8 +13,8 @@ let Article = bookshelf.model('Article', {
         return bookshelf.model('Comment').query()
             .where("articleID", this.get('articleID'))
             .count();
-    }
-    //hasTimestamps: true,
+    },
+    hasTimestamps: false
 });
 
 let ArticleCollection = bookshelf.collection('Article', {

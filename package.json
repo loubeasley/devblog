@@ -28,6 +28,8 @@
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "bookshelf": "^0.10.0",
+    "bookshelf-modelbase": "^2.10.3",
+    "bookshelf-schema": "^0.3.1",
     "bootstrap": "^3.3.7",
     "browser-sync": "^2.14.0",
     "connect-bookshelf": "0.0.3",
@@ -50,6 +52,7 @@
     "gulp-uglify": "^2.0.0",
     "gulp-wrap": "^0.13.0",
     "jasmine-core": "^2.4.1",
+    "joi": "^10.3.1",
     "jquery": "^3.1.0",
     "karma": "^0.13.19",
     "karma-chrome-launcher": "^0.2.2",
@@ -65,7 +68,10 @@
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "toastr": "^2.1.2",
-    "yargs": "^5.0.0"
+    "yargs": "^5.0.0",
+    "knex-logger": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
 }

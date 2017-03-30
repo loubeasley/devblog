@@ -1,5 +1,8 @@
 import bookshelf from 'bookshelf';
 import knex from 'knex';
+import _modelbase from 'bookshelf-modelbase';
+
+//import BookshelfSchema from 'bookshelf-schema';
 
 const connections = {
     production: {
@@ -28,6 +31,8 @@ let _knex = knex(connections[process.env.NODE_ENV || 'development']);
 
 let _bookshelf = bookshelf(_knex)
     .plugin('registry')
-    .plugin('pagination');
+    .plugin('pagination')
+    .plugin(_modelbase.pluggable);
+    //.plugin(BookshelfSchema);
 
 export default _bookshelf;

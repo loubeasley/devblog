@@ -34,6 +34,7 @@ const paths = {
         'angular-animate/angular-animate.js',
         'angular-sanitize/angular-sanitize.js',
         'angular-messages/angular-messages.js',
+        'angular-touch/angular-touch.js',
         'angular-scroll/angular-scroll.min.js',
         'angular-ui-router/release/angular-ui-router.js',
         'marked/lib/marked.js',
@@ -99,9 +100,9 @@ gulp.task('scripts', ['modules'], () => {
         ...paths.scripts,
         './build/templates.js'
     ])
-        /*.pipe(babel({
+        .pipe(babel({
             presets: ['es2015']
-        }))*/
+        }))
         .pipe(wrap('(function(angular){\n\'use strict\';\n<%= contents %>})(window.angular);'))
         .pipe(concat('bundle.js'))
         .pipe(ngAnnotate())
@@ -161,7 +162,7 @@ gulp.task('set-dev-node-env', function() {
 });
 
 gulp.task('default', [
-    /*'set-dev-node-env',*/
+    'set-dev-node-env',
     /*'babel',*/
     'copy',
     'styles',
