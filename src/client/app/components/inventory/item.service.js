@@ -18,25 +18,6 @@ function ItemService($resource) {
             return Item.save(items).$promise
         },
         Item$: Item
-        /*getArticleById: function (key) {
-            return Article.get({articleID: key}).$promise
-                .then(function (result) {
-                    if(result.success) return result.results;
-
-                    console.log(result);
-
-                    return [];
-                });
-        },
-        postArticle: function(data) {
-            return Article.save(data).$promise
-        },
-        updateArticle: function(id, data) {
-            return Article.update(id, data).$promise
-        },
-        deleteArticle: function(data) {
-            return Article.remove(data).$promise
-        }*/
     }
 }
 

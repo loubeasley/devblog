@@ -9,9 +9,11 @@ function replyButton() {
             article: '<',
             onPost: '&'
         },
-        bindToController: true,
+
         controller: function($scope, $element, $compile) {
+
             var ctrl = this;
+            console.log(ctrl);
             var selector = '#commentid-' + ctrl.comment.commentID + '-reply-box';
             var replyBox = null;
             var replyBoxScope = null;

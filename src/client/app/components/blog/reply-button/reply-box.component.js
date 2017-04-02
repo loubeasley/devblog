@@ -14,6 +14,7 @@ var replyBox = {
         };
 
         ctrl.postComment = function() {
+            console.log(ctrl);
             $scope.$emit('postComment', {
                 articleID: ctrl.article.articleID,
                 body: ctrl.pendingComment,

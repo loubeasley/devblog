@@ -16,7 +16,8 @@ var RoleAssignment = _bookshelf2.default.model('RoleAssignment', {
     idAttribute: 'roleassignmentID',
     user: function user() {
         return this.belongsTo(_bookshelf2.default.model('User'), 'userID');
-    }
+    },
+    hasTimestamps: false
 
 });
 

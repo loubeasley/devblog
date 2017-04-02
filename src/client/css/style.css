@@ -100,7 +100,7 @@ article header, article-create header {
 article .article-content p {
     /*max-height: 300px;
     overflow: hidden;*/
-    min-height: 100px;
+    /*min-height: 100px;*/
 
 }
 

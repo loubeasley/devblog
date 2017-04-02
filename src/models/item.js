@@ -23,26 +23,9 @@ let Item = ModelBase.extend({
     }
 });
 
-
-
-/*let Item = bookshelf.model('Item', {
-    tableName: 'items',
-    idAttribute: 'item_id',
-    category: function() {
-        return this.hasOne(bookshelf.model('Category'), 'category_id');
-    },
-
-    //hasTimestamps: true,
-
-    validate: {
-        firstName: Joi.string()
-    }
-});*/
-
 let ItemCollection = bookshelf.collection('Item', {
     model: Item
 });
-
 
 export default Item;
 export {Item as model, ItemCollection as collection};

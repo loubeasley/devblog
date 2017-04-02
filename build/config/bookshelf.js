@@ -12,7 +12,13 @@ var _knex2 = require('knex');
 
 var _knex3 = _interopRequireDefault(_knex2);
 
+var _bookshelfModelbase = require('bookshelf-modelbase');
+
+var _bookshelfModelbase2 = _interopRequireDefault(_bookshelfModelbase);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//import BookshelfSchema from 'bookshelf-schema';
 
 var connections = {
     production: {
@@ -39,6 +45,7 @@ var connections = {
 
 var _knex = (0, _knex3.default)(connections[process.env.NODE_ENV || 'development']);
 
-var _bookshelf = (0, _bookshelf3.default)(_knex).plugin('registry').plugin('pagination');
+var _bookshelf = (0, _bookshelf3.default)(_knex).plugin('registry').plugin('pagination').plugin(_bookshelfModelbase2.default.pluggable);
+//.plugin(BookshelfSchema);
 
 exports.default = _bookshelf;

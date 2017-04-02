@@ -22,8 +22,8 @@ var Comment = _bookshelf2.default.model('Comment', {
     },
     reply: function reply() {
         return this.hasMany(_bookshelf2.default.model('Comment'), 'parentID');
-    }
-    //hasTimestamps: true,
+    },
+    hasTimestamps: false
 });
 
 var CommentCollection = _bookshelf2.default.collection('Comment', {

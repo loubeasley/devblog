@@ -22,8 +22,8 @@ var Article = _bookshelf2.default.model('Article', {
     },
     getCommentsCount: function getCommentsCount() {
         return _bookshelf2.default.model('Comment').query().where("articleID", this.get('articleID')).count();
-    }
-    //hasTimestamps: true,
+    },
+    hasTimestamps: false
 });
 
 var ArticleCollection = _bookshelf2.default.collection('Article', {

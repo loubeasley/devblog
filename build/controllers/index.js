@@ -22,6 +22,14 @@ var _session = require('./session');
 
 var _session2 = _interopRequireDefault(_session);
 
+var _item = require('./item');
+
+var _item2 = _interopRequireDefault(_item);
+
+var _bookshelf = require('../config/bookshelf');
+
+var _bookshelf2 = _interopRequireDefault(_bookshelf);
+
 var _role = require('../models/role');
 
 var _role2 = _interopRequireDefault(_role);
@@ -30,15 +38,22 @@ var _roleassignment = require('../models/roleassignment');
 
 var _roleassignment2 = _interopRequireDefault(_roleassignment);
 
+var _knexLogger2 = require('knex-logger');
+
+var _knexLogger3 = _interopRequireDefault(_knexLogger2);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var KnexLogger = (0, _knexLogger3.default)(_bookshelf2.default.knex);
 
 exports.default = function () {
     var api = (0, _express.Router)();
-
+    api.use(KnexLogger);
     api.use('/user', _user2.default);
     api.use('/article', _article2.default);
     api.use('/comments', _comments2.default);
     api.use('/session', _session2.default);
+    api.use('/item', _item2.default);
 
     api.get('/', function (req, res) {
         res.json({
