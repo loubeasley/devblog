@@ -39861,7 +39861,7 @@ function ngMessageDirectiveFactory() {
 })(window, window.angular);
 
 /**
- * @license AngularJS v1.6.3
+ * @license AngularJS v1.6.4
  * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -39891,7 +39891,7 @@ function ngMessageDirectiveFactory() {
 /* global -ngTouch */
 var ngTouch = angular.module('ngTouch', []);
 
-ngTouch.info({ angularVersion: '1.6.3' });
+ngTouch.info({ angularVersion: '1.6.4' });
 
 ngTouch.provider('$touch', $TouchProvider);
 

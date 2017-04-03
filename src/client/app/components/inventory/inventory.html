@@ -21,7 +21,7 @@
         </div>-->
         <div class="row-fluid middle">
             <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a href="#" ng-click="showFilter = !showFilter">Filter</a></li>
+                <li role="presentation" class="active"><a href="#" ng-init="showFilter = true" ng-click="showFilter = !showFilter">Filter</a></li>
                 <li role="presentation"><a href="#">...</a></li>
                 <li role="presentation"><a href="#">...</a></li>
             </ul>
@@ -29,13 +29,20 @@
         <div class="row-fluid bottom">
             <form class="form-inline" ng-show="showFilter">
                 <div class="form-group">
-                    <label for="exampleInputName2" class="hidden-xs">Name</label>
+                    <label for="exampleInputName2" class="hidden-xs">
+                        <span class="fa" ng-class="{'fa-caret-up' : $ctrl.sort === 'name ASC', 'fa-caret-down' : $ctrl.sort === 'name DESC'}"></span>
+                        <span class="inventory-toggle-sort" ng-click="$ctrl.toggleSort('name')">Name</span>
+                    </label>
                     <input placeholder="Name" type="text" class="form-control input-sm" ng-model="$ctrl.filter.name"
                            ng-change="$ctrl.handleFilterChange()"
                            ng-model-options="{ allowInvalid: true, debounce: 200 }">
+                    <span class="fa fa-remove generic-remove-btn" ng-show="$ctrl.filter.name" ng-click="$ctrl.clearFilterItem('name')">&nbsp;</span>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputName2" class="hidden-xs">Category</label>
+                    <label for="exampleInputName2" class="hidden-xs">
+                        <span class="fa" ng-class="{'fa-caret-up' : $ctrl.sort === 'category_id ASC', 'fa-caret-down' : $ctrl.sort === 'category_id DESC'}"></span>
+                        <span class="inventory-toggle-sort" ng-click="$ctrl.toggleSort('category_id')">Category</span>
+                    </label>
                     <select  ng-change="$ctrl.handleFilterChange()"
                              ng-model-options="{ allowInvalid: true, debounce: 200 }"
                              class="form-control input-sm"
@@ -43,17 +50,24 @@
                              ng-model="$ctrl.filter.category_id">
                         <option>asdf</option>
                     </select>
+
+                    <span class="fa fa-remove generic-remove-btn" ng-show="$ctrl.filter.category_id" ng-click="$ctrl.clearFilterItem('category_id')">&nbsp;</span>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputName2" class="hidden-xs">Quantity</label>
-                    <select  class="form-control input-sm">
-                        <option>==</option>
-                        <option>&gt;</option>
-                        <option>&lt;</option>
+                    <label for="exampleInputName2" class="hidden-xs">
+                        <span class="fa" ng-class="{'fa-caret-up' : $ctrl.sort === 'quantity ASC', 'fa-caret-down' : $ctrl.sort === 'quantity DESC'}"></span>
+                        <span class="inventory-toggle-sort" ng-click="$ctrl.toggleSort('quantity')">Quantity</span>
+                    </label>
+                    <!--<select  class="form-control input-sm" ng-model="$ctrl.filter.quantityMod">
+                        <option >==</option>
+                        <option >&gt;</option>
+                        <option >&lt;</option>
 
-                    </select>
-                    <input style="width:100px;" type="number" class="form-control input-sm" id="exampleInputName2" placeholder="0">
-
+                    </select>-->
+                    <input style="width:100px;" ng-model="$ctrl.filter.quantity" type="number" class="form-control input-sm" id="exampleInputName2" placeholder="0"
+                           ng-change="$ctrl.handleFilterChange()"
+                           ng-model-options="{ allowInvalid: true, debounce: 200 }">
+                    <span class="fa fa-remove generic-remove-btn " ng-show="$ctrl.filter.quantity" ng-click="$ctrl.clearFilterItem('quantity')">&nbsp;</span>
                 </div>
             </form>
         </div>

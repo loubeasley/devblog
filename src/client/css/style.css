@@ -861,3 +861,8 @@ label {
 .overlay {
 
 }
+
+.generic-remove-btn {
+    padding: 0 0 0 11px;
+    text-shadow: 1px 1px 1px black;
+}

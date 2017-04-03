@@ -5,6 +5,7 @@ class InventoryController {
         this.InventoryService = InventoryService;
         this.$stateParams = $stateParams;
         this.filter = {};
+        this.sort = {};
         this.itemHistory = {};
         this.loading = true;
         this.categories = [];
@@ -32,8 +33,30 @@ class InventoryController {
             });
     }
 
+    toggleSort(prop) {
+        if(!prop) return;
+
+        if(this.sort === prop + ' ASC')
+            this.sort = prop + ' DESC';
+        else
+            this.sort = prop + ' ASC';
+
+        this.handleFilterChange();
+    }
+
+    clearFilterItem(prop, reload = true) {
+        if(!this.filter[prop]) return;
+
+        this.filter[prop] = null;
+        delete this.filter[prop];
+
+        if(reload) this.handleFilterChange();
+    }
+
     handleFilterChange() {
+        this.$stateParams.sort = this.sort;
         this.$stateParams.search = JSON.stringify(this.filter);
+        console.log(this.$stateParams);
         this.ItemService.getItems(this.$stateParams)
             .then((result) => {
                 this.items = result;
@@ -72,6 +95,10 @@ class InventoryController {
                 this.items = result;
                 this.$onInit();
                 this.loading = false;
+                toastr.success('Changes were committed successfully!');
+            })
+            .catch(function(err){
+                toastr.error(err.message);
             });
 
     }

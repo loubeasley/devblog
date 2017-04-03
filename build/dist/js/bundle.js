@@ -832,6 +832,7 @@ var InventoryController = function () {
         this.InventoryService = InventoryService;
         this.$stateParams = $stateParams;
         this.filter = {};
+        this.sort = {};
         this.itemHistory = {};
         this.loading = true;
         this.categories = [];
@@ -855,11 +856,34 @@ var InventoryController = function () {
             });
         }
     }, {
+        key: "toggleSort",
+        value: function toggleSort(prop) {
+            if (!prop) return;
+
+            if (this.sort === prop + ' ASC') this.sort = prop + ' DESC';else this.sort = prop + ' ASC';
+
+            this.handleFilterChange();
+        }
+    }, {
+        key: "clearFilterItem",
+        value: function clearFilterItem(prop) {
+            var reload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+            if (!this.filter[prop]) return;
+
+            this.filter[prop] = null;
+            delete this.filter[prop];
+
+            if (reload) this.handleFilterChange();
+        }
+    }, {
         key: "handleFilterChange",
         value: function handleFilterChange() {
             var _this2 = this;
 
+            this.$stateParams.sort = this.sort;
             this.$stateParams.search = JSON.stringify(this.filter);
+            console.log(this.$stateParams);
             this.ItemService.getItems(this.$stateParams).then(function (result) {
                 _this2.items = result;
             });
@@ -900,6 +924,9 @@ var InventoryController = function () {
                 _this3.items = result;
                 _this3.$onInit();
                 _this3.loading = false;
+                toastr.success('Changes were committed successfully!');
+            }).catch(function (err) {
+                toastr.error(err.message);
             });
         }
     }, {
@@ -1354,6 +1381,82 @@ angular.module('components.blog').factory('ArticleService', ArticleService);})(w
 'use strict';
 'use strict';
 
+var articlePage = {
+    templateUrl: './article-create.html',
+    controller: 'ArticleCreateController',
+    bindings: {
+        article: '<'
+    }
+};
+
+angular.module('components.blog').component('articleCreate', articlePage).config(["$stateProvider", function ($stateProvider) {
+    $stateProvider.state('app.article.create', {
+        url: '/create',
+        component: 'articleCreate',
+        /*resolve: {
+            article: function ($transition$, BlogService) {
+                var key = $transition$.params().articleID;
+                return BlogService.getArticleById(key);
+            }
+        }*/
+        requiresAdmin: true,
+        views: {
+            '@app': {
+                component: 'articleCreate'
+            },
+            widget: {
+                template: 'asdfasdfasdfasdf!!!!'
+            }
+        }
+    });
+}]);})(window.angular);
+(function(angular){
+'use strict';
+'use strict';
+
+function ArticleCreateController(ArticleService, SessionService, marked, $state) {
+    var ctrl = this;
+
+    ctrl.articleBody = '';
+    ctrl.articleTitle = '';
+    ctrl.rightNow = new Date();
+    ctrl.currentUser = SessionService.currentSession().username;
+
+    ctrl.$onInit = function $onInit() {
+        if (ctrl.article) {
+            ctrl.articleBody = ctrl.article.body;
+            ctrl.articleTitle = ctrl.article.title;
+        }
+    };
+
+    ctrl.postArticle = function () {
+        if (!SessionService.isAuthenticated()) return toastr.warning('You need to be logged in.');
+
+        var body = {
+            title: ctrl.articleTitle || null,
+            body: ctrl.articleBody || null,
+            userID: SessionService.currentSession().userID || null
+        };
+
+        (ctrl.article ? ArticleService.updateArticle({ articleID: ctrl.article.articleID }, body) : ArticleService.postArticle(body)).then(function (res) {
+            if (res.success) {
+                toastr.success('Article posted successfully!');
+                return $state.go('app.article.view', { articleID: res.results.articleID }, { reload: true });
+            }
+
+            toastr.error(res.message || 'Something went wrong!');
+            return null;
+        });
+    };
+}
+
+ArticleCreateController.$inject = ['ArticleService', 'SessionService', 'marked', '$state'];
+
+angular.module('components.blog').controller('ArticleCreateController', ArticleCreateController);})(window.angular);
+(function(angular){
+'use strict';
+'use strict';
+
 var articleCommentsChildren = {
     templateUrl: './article-comments-children.html',
     controller: 'ArticleCommentsChildrenController',
@@ -1472,82 +1575,6 @@ ArticleCommentsController.$inject = ['BlogService', 'SessionService', 'marked', 
 angular.module('components.blog').run(['$anchorScroll', function ($anchorScroll) {
     $anchorScroll.yOffset = 150; // always scroll by 50 extra pixels
 }]).controller('ArticleCommentsController', ArticleCommentsController);})(window.angular);
-(function(angular){
-'use strict';
-'use strict';
-
-var articlePage = {
-    templateUrl: './article-create.html',
-    controller: 'ArticleCreateController',
-    bindings: {
-        article: '<'
-    }
-};
-
-angular.module('components.blog').component('articleCreate', articlePage).config(["$stateProvider", function ($stateProvider) {
-    $stateProvider.state('app.article.create', {
-        url: '/create',
-        component: 'articleCreate',
-        /*resolve: {
-            article: function ($transition$, BlogService) {
-                var key = $transition$.params().articleID;
-                return BlogService.getArticleById(key);
-            }
-        }*/
-        requiresAdmin: true,
-        views: {
-            '@app': {
-                component: 'articleCreate'
-            },
-            widget: {
-                template: 'asdfasdfasdfasdf!!!!'
-            }
-        }
-    });
-}]);})(window.angular);
-(function(angular){
-'use strict';
-'use strict';
-
-function ArticleCreateController(ArticleService, SessionService, marked, $state) {
-    var ctrl = this;
-
-    ctrl.articleBody = '';
-    ctrl.articleTitle = '';
-    ctrl.rightNow = new Date();
-    ctrl.currentUser = SessionService.currentSession().username;
-
-    ctrl.$onInit = function $onInit() {
-        if (ctrl.article) {
-            ctrl.articleBody = ctrl.article.body;
-            ctrl.articleTitle = ctrl.article.title;
-        }
-    };
-
-    ctrl.postArticle = function () {
-        if (!SessionService.isAuthenticated()) return toastr.warning('You need to be logged in.');
-
-        var body = {
-            title: ctrl.articleTitle || null,
-            body: ctrl.articleBody || null,
-            userID: SessionService.currentSession().userID || null
-        };
-
-        (ctrl.article ? ArticleService.updateArticle({ articleID: ctrl.article.articleID }, body) : ArticleService.postArticle(body)).then(function (res) {
-            if (res.success) {
-                toastr.success('Article posted successfully!');
-                return $state.go('app.article.view', { articleID: res.results.articleID }, { reload: true });
-            }
-
-            toastr.error(res.message || 'Something went wrong!');
-            return null;
-        });
-    };
-}
-
-ArticleCreateController.$inject = ['ArticleService', 'SessionService', 'marked', '$state'];
-
-angular.module('components.blog').controller('ArticleCreateController', ArticleCreateController);})(window.angular);
 (function(angular){
 'use strict';
 'use strict';
@@ -1857,13 +1884,13 @@ angular.module('templates', []).run(['$templateCache', function ($templateCache)
   $templateCache.put('./root.html', '<div class="root"><div ui-view></div></div>');
   $templateCache.put('./app-nav.html', '<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container"><!-- Brand and toggle get grouped for better mobile display --><div class="navbar-header"><button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button> <a class="navbar-brand" href="#"><span class="fa fa-database"></span></a></div><div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"><ul class="nav navbar-nav"><li ui-sref-active="active"><a ui-sref=".blog">Blog</a></li><li ui-sref-active="active"><a ui-sref=".inventory">Inventory App</a></li></ul><ul class="nav navbar-nav navbar-right"><li ng-show="$root.session != null"><a class="text-primary">Logged in as: {{$root.session.username}}!</a><!--<ul class="dropdown-menu">\r\n                        <li>\r\n                            <a>haspm!!!</a>\r\n                        </li>\r\n                        <li>\r\n                            <a>haspm!!!</a>\r\n                        </li>\r\n                    </ul>--></li><li><a ng-click="$ctrl.logout()" ng-show="$root.session != null">Log out</a></li><li ui-sref-active="active"><a ui-sref=".register" ng-hide="$root.session != null">Sign Up</a></li><li class="dropdown" ng-hide="$root.session != null" ui-sref-active="active"><a ui-sref="app.login">Sign in <!--<b class="caret"></b>--></a><!--<ul class="dropdown-menu" style="padding: 15px;min-width: 250px;">\r\n                        <li>\r\n                            <div class="row">\r\n                                <div class="col-md-12">\r\n                                    <form class="form" role="form" accept-charset="UTF-8" id="login-nav">\r\n                                        <div class="form-group">\r\n                                            <label class="sr-only" for="exampleInputEmail2">Email address</label>\r\n                                            <input ng-model="$ctrl.login.username" type="text" class="form-control" id="exampleInputEmail2" placeholder="Email address" required="">\r\n                                        </div>\r\n                                        <div class="form-group">\r\n                                            <label class="sr-only" for="exampleInputPassword2">Password</label>\r\n                                            <input ng-model="$ctrl.login.password" type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required="">\r\n                                        </div>\r\n                                        <div class="checkbox">\r\n                                            <label>\r\n                                                <input type="checkbox"> Remember me\r\n                                            </label>\r\n                                        </div>\r\n                                        <div class="form-group">\r\n                                            <button type="submit" data-toggle="dropdown" class="btn btn-success btn-block" ng-click="$ctrl.submit()">Sign in</button>\r\n                                        </div>\r\n                                    </form>\r\n                                </div>\r\n                            </div>\r\n                        </li>\r\n                        <li class="divider"></li>\r\n                        <li>\r\n                            <a href="/api/session/facebook">facebook</a>\r\n                            <input class="btn btn-primary btn-block" type="button" id="sign-in-google" value="Sign In with Facebook" href="/api/session/facebook">\r\n                            <input class="btn btn-primary btn-block" type="button" id="sign-in-twitter" value="Sign In with Twitter">\r\n                        </li>\r\n                    </ul>--></li></ul></div></div><!-- /.container-fluid --></nav><!--<div class="splash-bg"></div>--><!--\r\n<div class="logo">\r\n    <img src="./img/logo.png" />\r\n</div>-->');
   $templateCache.put('./app.html', '<div class="root"><app-nav session="$ctrl.session"></app-nav><div ui-view="widget"></div><div class="app"><main class="container"><div class="blog-content"><div ui-view></div></div></main></div><!--<div class="row">\r\n        <div class="col-md-12 col-lg-6">\r\n            <label for="comment">Live Markdown with <a href="http://www.codingdrama.com/bootstrap-markdown/">Bootstrap-Markdown Editor</a>:</label>\r\n            <textarea name="content" markdown-editor="{\'iconlibrary\': \'fa\', addExtraButtons: true, resize: \'vertical\'}" rows="10" ng-model="markdown"></textarea>\r\n        </div>\r\n        <div class="col-md-12 col-lg-6 fill">\r\n            <div class="form-group">\r\n                <label for="comment">Preview Result:</label>\r\n                <div marked="markdown" class="outline" style="padding: 20px">\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>--></div>');
-  $templateCache.put('./uiBreadcrumbs.tpl.html', '<ol class="breadcrumb"><li ng-repeat="crumb in breadcrumbs" ng-class="{ active: $last }"><a ui-sref="{{ crumb.route }}" ng-if="!$last">{{ crumb.displayName }}&nbsp;</a><span ng-show="$last">{{ crumb.displayName }}</span></li></ol>');
   $templateCache.put('./error-box.html', '<div ng-repeat="error in $ctrl.errors"><div class="well well-sm bg-danger">{{error}}</div></div>errobox');
+  $templateCache.put('./uiBreadcrumbs.tpl.html', '<ol class="breadcrumb"><li ng-repeat="crumb in breadcrumbs" ng-class="{ active: $last }"><a ui-sref="{{ crumb.route }}" ng-if="!$last">{{ crumb.displayName }}&nbsp;</a><span ng-show="$last">{{ crumb.displayName }}</span></li></ol>');
   $templateCache.put('./about-page.html', '..................?????');
   $templateCache.put('./error-page.html', '<div class="row"><div class="col-md-4"><span class="text-right bigger-text"><a ng-click="$ctrl.back()">\u21E6 Back</a></span><div class="well well-sm text-center"><img src="img/fuck-that-bitch-yao-ming.png" height="210" width="183"><div class="big-header">{{$ctrl.errorCode}}</div>{{$ctrl.errorDesc}}</div></div><div class="col-md-8"><span class="text-right">&nbsp;</span><div class="access-denied-block"><h1><span class="fa fa-warning"></span> {{$ctrl.errorMsg}}</h1><br><br><blockquote><p>We always long for the forbidden things, and desire what is denied us.</p></blockquote></div></div></div>');
-  $templateCache.put('./inventory.html', '<div class="overlay" ng-show="$ctrl.loading">LOADING</div><div class=""><div class="inventory-toolbar"><div class="row-fluid top"><div class="pull-left"><button type="button" class="btn btn-default"><span class="fa fa-undo"></span></button> <button type="button" class="btn btn-default"><span class="fa fa-repeat"></span></button></div><div class="pull-right" ng-show="$ctrl.InventoryService.inProgress"><button type="button" class="btn btn-danger">Reset</button> <button type="button" class="btn btn-success" ng-click="$ctrl.handleCommit()">Commit</button></div><div class="clearfix"></div></div><!--<div>\r\n            <div class="btn-group btn-group-justified" role="group" aria-label="...">\r\n                <div class="btn btn-primary">Left</div>\r\n                <div class="btn btn-primary">Middle</div>\r\n                <div class="btn btn-primary">Right</div>\r\n            </div>\r\n        </div>--><div class="row-fluid middle"><ul class="nav nav-tabs"><li role="presentation" class="active"><a href="#" ng-click="showFilter = !showFilter">Filter</a></li><li role="presentation"><a href="#">...</a></li><li role="presentation"><a href="#">...</a></li></ul></div><div class="row-fluid bottom"><form class="form-inline" ng-show="showFilter"><div class="form-group"><label for="exampleInputName2" class="hidden-xs">Name</label><input placeholder="Name" type="text" class="form-control input-sm" ng-model="$ctrl.filter.name" ng-change="$ctrl.handleFilterChange()" ng-model-options="{ allowInvalid: true, debounce: 200 }"></div><div class="form-group"><label for="exampleInputName2" class="hidden-xs">Category</label><select ng-change="$ctrl.handleFilterChange()" ng-model-options="{ allowInvalid: true, debounce: 200 }" class="form-control input-sm" ng-options="category.category_id as category.name for category in $ctrl.categories" ng-model="$ctrl.filter.category_id"><option>asdf</option></select></div><div class="form-group"><label for="exampleInputName2" class="hidden-xs">Quantity</label><select class="form-control input-sm"><option>==</option><option>&gt;</option><option>&lt;</option></select><input style="width:100px" type="number" class="form-control input-sm" id="exampleInputName2" placeholder="0"></div></form></div></div><div class="inventory-table-wrapper"><table class="table table-striped inventory-table"><tbody><tr ng-show="!$ctrl.currentItems.length"><td>No results.</td></tr><tr class="bigger-text inventory-row" ng-repeat="item in $ctrl.currentItems" ng-init="$item = $ctrl.getItem(item.item_id)" ng-class="{\'inventory-row-dirty\' : $item.isDirty()}"><td>{{item.name}}&nbsp;&nbsp;<span class="hidden-xs">({{item.unit}})</span></td><td valign="center" ng-swipe-right="$ctrl.incrementQuantity($item)" ng-swipe-left="$ctrl.decrementQuantity($item)" style="padding:0" id="{{\'item-slider-\' + item.item_id}}" class="inv-slider"><span ng-switch="!!$item._changes.quantity " class="no-animate"><span ng-switch-default>{{$item.quantity}} <span ng-class="$item._changes.quantity > 0 ? \'positive\' : \'negative\'" class="signed">{{$item._changes.quantity>0?$item._changes.quantity:($item._changes.quantity*-1) || \'\'}} </span></span><span ng-switch-when="false" class="fa fa-arrows-h inventory-swiper"></span></span></td><td class="inventory-total-col"><span ng-show="toggled"><input type="text" class="tiny-input" ng-model="tedt"> </span><span ng-show="!toggled" ng-click="toggled = true"><span ng-class="{\'positive\' : $item._changes.quantity > 0, \'negative\': $item._changes.quantity < 0}">{{($item._changes.quantity || 0) + item.quantity}}</span></span></td><td class="text-right hidden-xs"><span class="btn btn-default fa fa-minus" ng-click="$ctrl.decrementQuantity($item)"></span> <span class="btn btn-default fa fa-plus" ng-click="$ctrl.incrementQuantity($item)"></span></td></tr></tbody></table></div></div>');
-  $templateCache.put('./login.html', '<div class="row"><form server-validate name="loginForm" ng-submit="$ctrl.login()"><div class="col-md-6 col-md-offset-3 stacked-inputs"><h1><span class="fa fa-sign-in" aria-hidden="true"></span> <span>Login</span></h1><div class="form-group no-margin" ng-class="{ \'has-error\': loginForm.username.$invalid && (loginForm.username.$dirty || loginForm.$submitted) }"><input class="form-control input-lg" placeholder="Username" name="username" required ng-model="$ctrl.loginData.username"></div><div class="form-group" ng-class="{ \'has-error\': loginForm.password.$invalid && (loginForm.password.$dirty || loginForm.$submitted) }"><input class="form-control input-lg" type="password" placeholder="Password" name="password" required ng-model="$ctrl.loginData.password"></div><div ng-messages="loginForm.username.$error"><div ng-message="server.failed">{{$ctrl.errors[\'username\'].message}}</div></div><div ng-messages="loginForm.password.$error"><div ng-message="server.failed">{{$ctrl.errors[\'password\'].message}}</div></div><button type="submit" class="btn btn-primary btn-lg btn-block" ng-disabled="loginForm.$invalid">Submit</button><h5>Don\'t have an account? <a ui-sref="app.register">Register here</a>.</h5></div></form></div>');
+  $templateCache.put('./inventory.html', '<div class="overlay" ng-show="$ctrl.loading">LOADING</div><div class=""><div class="inventory-toolbar"><div class="row-fluid top"><div class="pull-left"><button type="button" class="btn btn-default"><span class="fa fa-undo"></span></button> <button type="button" class="btn btn-default"><span class="fa fa-repeat"></span></button></div><div class="pull-right" ng-show="$ctrl.InventoryService.inProgress"><button type="button" class="btn btn-danger">Reset</button> <button type="button" class="btn btn-success" ng-click="$ctrl.handleCommit()">Commit</button></div><div class="clearfix"></div></div><!--<div>\r\n            <div class="btn-group btn-group-justified" role="group" aria-label="...">\r\n                <div class="btn btn-primary">Left</div>\r\n                <div class="btn btn-primary">Middle</div>\r\n                <div class="btn btn-primary">Right</div>\r\n            </div>\r\n        </div>--><div class="row-fluid middle"><ul class="nav nav-tabs"><li role="presentation" class="active"><a href="#" ng-init="showFilter = true" ng-click="showFilter = !showFilter">Filter</a></li><li role="presentation"><a href="#">...</a></li><li role="presentation"><a href="#">...</a></li></ul></div><div class="row-fluid bottom"><form class="form-inline" ng-show="showFilter"><div class="form-group"><label for="exampleInputName2" class="hidden-xs"><span class="fa" ng-class="{\'fa-caret-up\' : $ctrl.sort === \'name ASC\', \'fa-caret-down\' : $ctrl.sort === \'name DESC\'}"></span> <span class="inventory-toggle-sort" ng-click="$ctrl.toggleSort(\'name\')">Name</span></label><input placeholder="Name" type="text" class="form-control input-sm" ng-model="$ctrl.filter.name" ng-change="$ctrl.handleFilterChange()" ng-model-options="{ allowInvalid: true, debounce: 200 }"> <span class="fa fa-remove generic-remove-btn" ng-show="$ctrl.filter.name" ng-click="$ctrl.clearFilterItem(\'name\')">&nbsp;</span></div><div class="form-group"><label for="exampleInputName2" class="hidden-xs"><span class="fa" ng-class="{\'fa-caret-up\' : $ctrl.sort === \'category_id ASC\', \'fa-caret-down\' : $ctrl.sort === \'category_id DESC\'}"></span> <span class="inventory-toggle-sort" ng-click="$ctrl.toggleSort(\'category_id\')">Category</span></label><select ng-change="$ctrl.handleFilterChange()" ng-model-options="{ allowInvalid: true, debounce: 200 }" class="form-control input-sm" ng-options="category.category_id as category.name for category in $ctrl.categories" ng-model="$ctrl.filter.category_id"><option>asdf</option></select><span class="fa fa-remove generic-remove-btn" ng-show="$ctrl.filter.category_id" ng-click="$ctrl.clearFilterItem(\'category_id\')">&nbsp;</span></div><div class="form-group"><label for="exampleInputName2" class="hidden-xs"><span class="fa" ng-class="{\'fa-caret-up\' : $ctrl.sort === \'quantity ASC\', \'fa-caret-down\' : $ctrl.sort === \'quantity DESC\'}"></span> <span class="inventory-toggle-sort" ng-click="$ctrl.toggleSort(\'quantity\')">Quantity</span></label><!--<select  class="form-control input-sm" ng-model="$ctrl.filter.quantityMod">\r\n                        <option >==</option>\r\n                        <option >&gt;</option>\r\n                        <option >&lt;</option>\r\n\r\n                    </select>--> <input style="width:100px" ng-model="$ctrl.filter.quantity" type="number" class="form-control input-sm" id="exampleInputName2" placeholder="0" ng-change="$ctrl.handleFilterChange()" ng-model-options="{ allowInvalid: true, debounce: 200 }"> <span class="fa fa-remove generic-remove-btn" ng-show="$ctrl.filter.quantity" ng-click="$ctrl.clearFilterItem(\'quantity\')">&nbsp;</span></div></form></div></div><div class="inventory-table-wrapper"><table class="table table-striped inventory-table"><tbody><tr ng-show="!$ctrl.currentItems.length"><td>No results.</td></tr><tr class="bigger-text inventory-row" ng-repeat="item in $ctrl.currentItems" ng-init="$item = $ctrl.getItem(item.item_id)" ng-class="{\'inventory-row-dirty\' : $item.isDirty()}"><td>{{item.name}}&nbsp;&nbsp;<span class="hidden-xs">({{item.unit}})</span></td><td valign="center" ng-swipe-right="$ctrl.incrementQuantity($item)" ng-swipe-left="$ctrl.decrementQuantity($item)" style="padding:0" id="{{\'item-slider-\' + item.item_id}}" class="inv-slider"><span ng-switch="!!$item._changes.quantity " class="no-animate"><span ng-switch-default>{{$item.quantity}} <span ng-class="$item._changes.quantity > 0 ? \'positive\' : \'negative\'" class="signed">{{$item._changes.quantity>0?$item._changes.quantity:($item._changes.quantity*-1) || \'\'}} </span></span><span ng-switch-when="false" class="fa fa-arrows-h inventory-swiper"></span></span></td><td class="inventory-total-col"><span ng-show="toggled"><input type="text" class="tiny-input" ng-model="tedt"> </span><span ng-show="!toggled" ng-click="toggled = true"><span ng-class="{\'positive\' : $item._changes.quantity > 0, \'negative\': $item._changes.quantity < 0}">{{($item._changes.quantity || 0) + item.quantity}}</span></span></td><td class="text-right hidden-xs"><span class="btn btn-default fa fa-minus" ng-click="$ctrl.decrementQuantity($item)"></span> <span class="btn btn-default fa fa-plus" ng-click="$ctrl.incrementQuantity($item)"></span></td></tr></tbody></table></div></div>');
   $templateCache.put('./register.html', '<!--<h1 class="text-center">Sign up!</h1>--><div class="row"><form server-validate name="registerForm" ng-submit="$ctrl.register()"><div class="col-md-6 col-md-offset-3 stacked-inputs"><h1><span class="fa fa-user-plus" aria-hidden="true"></span> <span>Register</span></h1><div class="form-group no-margin" ng-class="{ \'has-error\': registerForm.username.$invalid && registerForm.username.$dirty }"><input class="form-control input-lg" placeholder="Username" name="username" required ng-pattern="/^[A-Za-z0-9_@.]*$/" minlength="3" maxlength="20" ng-model="$ctrl.registerData.username"></div><div class="form-group no-margin" ng-class="{ \'has-error\': registerForm.password.$invalid && registerForm.password.$dirty }"><input class="form-control input-lg" type="password" placeholder="Password" name="password" required minlength="8" maxlength="40" ng-model="$ctrl.registerData.password"></div><div class="form-group" ng-class="{ \'has-error\': registerForm.confirmPassword.$invalid && registerForm.confirmPassword.$dirty }"><input class="form-control input-lg" type="password" placeholder="Confirm Password" name="confirmPassword" required compare-to="$ctrl.registerData.password" ng-model="$ctrl.registerData.confirmPassword"></div><div ng-messages="registerForm.username.$error" ng-if="registerForm.username.$dirty && registerForm.username.$invalid"><div ng-message="required">Username required</div><div ng-message="pattern" marked="\'Username must not contain special characters. You may use: `.`, `_`, and `@`.\'"></div><div ng-message="minlength">Username is too short.</div><div ng-message="maxlength">Username is too long.</div><div ng-message="server.failed">{{$ctrl.errors[\'username\'].message}}</div></div><div ng-messages="registerForm.password.$error" ng-if="registerForm.password.$dirty && registerForm.password.$invalid"><div ng-message="required">Password required</div><div ng-message="minlength">Password is too short.</div><div ng-message="maxlength">Password is too long.</div><div ng-message="server.failed">{{$ctrl.errors[\'password\'].message}}</div></div><div ng-messages="registerForm.confirmPassword.$error" ng-if="registerForm.confirmPassword.$dirty && registerForm.confirmPassword.$invalid && $ctrl.registerData.password.length"><div ng-message="required">Confirm password required</div><div ng-message="compareTo">Passwords do not match!</div></div><button type="submit" class="btn btn-primary btn-lg btn-block" ng-disabled="registerForm.$invalid">Sign up</button><h5>Already have an account? <a ui-sref="app.login">Sign in here</a>.</h5></div></form></div>');
+  $templateCache.put('./login.html', '<div class="row"><form server-validate name="loginForm" ng-submit="$ctrl.login()"><div class="col-md-6 col-md-offset-3 stacked-inputs"><h1><span class="fa fa-sign-in" aria-hidden="true"></span> <span>Login</span></h1><div class="form-group no-margin" ng-class="{ \'has-error\': loginForm.username.$invalid && (loginForm.username.$dirty || loginForm.$submitted) }"><input class="form-control input-lg" placeholder="Username" name="username" required ng-model="$ctrl.loginData.username"></div><div class="form-group" ng-class="{ \'has-error\': loginForm.password.$invalid && (loginForm.password.$dirty || loginForm.$submitted) }"><input class="form-control input-lg" type="password" placeholder="Password" name="password" required ng-model="$ctrl.loginData.password"></div><div ng-messages="loginForm.username.$error"><div ng-message="server.failed">{{$ctrl.errors[\'username\'].message}}</div></div><div ng-messages="loginForm.password.$error"><div ng-message="server.failed">{{$ctrl.errors[\'password\'].message}}</div></div><button type="submit" class="btn btn-primary btn-lg btn-block" ng-disabled="loginForm.$invalid">Submit</button><h5>Don\'t have an account? <a ui-sref="app.register">Register here</a>.</h5></div></form></div>');
   $templateCache.put('./article.html', '<header class="row"><div class="avatar col-md-1 hidden-xs"><img src="./img/databaseicon.png"></div><div class="article-title col-md-11"><a ui-sref="app.article.view({articleID: $ctrl.article.articleID})">{{::$ctrl.article.title || \'NO TITLE\'}}</a></div><div class="article-info col-md-11">Posted on {{::$ctrl.article.createdAt | date}} by <a>{{::$ctrl.article.user.username}}</a><div class="article-admin-ctrl" ng-if="$root.session.role.roleID == 2"><button class="btn btn-primary btn-xs" title="edit" ui-sref="app.article.view.edit({articleID: $ctrl.article.articleID})"><span class="fa fa-pencil"></span></button> <button class="btn btn-danger btn-xs" title="remove" ng-click="$ctrl.deleteArticle()"><span class="fa fa-trash"></span></button></div></div></header><div class="article-content"><p marked="::$ctrl.article.body"></p><!--<div style="position: relative">\r\n        <p ng-bind-html="::$ctrl.article.body"></p>\r\n        <div class="fadeout" ng-if="$ctrl.article.body.length > 200"></div>\r\n    </div>\r\n    <div class="article-continue" ng-if="$ctrl.article.body.length > 200">\r\n        <a ui-sref="article({id: $ctrl.article.articleID })">Continue reading...</a>{{$ctrl.article.articleID}}\r\n    </div>--><div class="article-continue text-right"><a ui-sref="app.article.view({articleID: $ctrl.article.articleID})">Comments \xBB</a></div></div><!--\r\n<div class="article-comments text-right">\r\n    <a>34 Comments</a>\r\n</div>-->');
   $templateCache.put('./article-comments-children.html', '<div class="children" ng-if="$ctrl.comments.length > 0"><!--<div class="children" ng-if="$ctrl.comments.length > 0" > ---><div class="comment" ng-repeat="comment in $ctrl.comments" ng-init="comment.hidden = true"><div class="caption" id="{{\'article-\' + comment.articleID + \'-comment-\' + comment.commentID}}" ng-class="::{\'user-comment\' : comment.userID == $root.session.userID}"><div class="comment-body" ng-click="comment.hidden=!comment.hidden" ng-class="{\'clickable\' : comment.replies.length > 0}"><div class="author"><a>{{::comment.user.username}}</a><span class="comment-spacer">{{::comment.createdAt | date:\'short\'}}</span></div><span marked="::comment.body"></span></div><div class="comment-reply-area"><reply-button ng-if="comment" comment="comment" article="$ctrl.article" on-post="$ctrl.onPost()"></reply-button></div><div class="comment-info"><div class="comment-reply" ng-if="comment.replies.length > 0"><a class="white-links" ng-click="comment.hidden=!comment.hidden">{{comment.hidden ? \'+ show replies\' : \'- hide replies\'}}</a></div></div><!--<span ng-if="::comment.replyCount > 0">{{comment.replyCount}} replies</span>--><!--<div class="comment-info">\r\n\r\n                <div class="comment-reply">\r\n                    <a class="white-links" ng-if="comment.replies.length > 0"\r\n                       ng-click="comment.hidden=!comment.hidden">\r\n                        {{comment.hidden ? \'+ show replies\' : \'- hide replies\'}}\r\n                    </a>\r\n                </div>\r\n\r\n                <div class="pull-right">\r\n                    <reply-button comment="comment" article="$ctrl.article"></reply-button>\r\n                </div>\r\n                <div class="clearfix"></div>\r\n            </div>--></div><div class="comment-nested-helper"><div id="{{\'commentid-\' + comment.commentID + \'-reply-box\'}}"></div><div class="hider" ng-if="!comment.hidden"><article-comments-children style="display: block" article="$ctrl.article" comments="comment.replies" parent-id="comment.commentID" hide-bool="$ctrl.hidden"></article-comments-children></div></div></div></div>');
   $templateCache.put('./article-comments.html', '<div class="comments-container"><div class="comment-create" ng-switch="!!$root.session"><div ng-switch-when="true"><!--<textarea placeholder="Write a comment..."\r\n                      data-ng-model="$ctrl.pendingComment"\r\n                      id="first" data-ng-show="show"\r\n                      ng-init="show = true"\r\n                      markdown-editor="{\'iconlibrary\': \'fa\', addExtraButtons: true, resize: \'vertical\'}">\r\n            </textarea>\r\n            <div class="comment-create-footer">\r\n                <button class="btn-sm btn btn-default right" ng-click="$ctrl.postComment()" ng-init="thing = 0">Post\r\n                </button>\r\n                <div class="clearfix"></div>\r\n            </div>--><reply-box></reply-box></div><div ng-switch-default class="comment-nologin-info"><h3 class="no-margin text-center"><span class="fa fa-warning"></span> <a ui-sref="app.login">Sign in</a> to post a comment!</h3></div></div><!--<div class="comment-info">{{$ctrl.comments.total}} COMMENTS</div>--><article-comments-children article="$ctrl.article" comments="$ctrl.comments" on-post-comment="$ctrl.postComment" parent-id="root">wut</article-comments-children></div>');
