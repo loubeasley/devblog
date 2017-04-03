@@ -46,7 +46,7 @@ router.route('/')
 
         let query = _.assign(defaultQuery, value);
 
-        /*console.log(query.search);*/
+        console.log(query.search);
 
         return new Item()
             .query(function (qb) {
@@ -54,14 +54,15 @@ router.route('/')
                 if (query.search && query.search.name)
                     qb.where('name', 'LIKE', '%' + query.search.name + '%');
 
+                if (query.search && query.search.category_id)
+                    qb.where('category_id', '=', query.search.category_id);
+
                 /*if(query.search.hasOwnProperty('quantity')) {
                  qb.andWhere('quantity', 'LIKE', '%' + query.search.quantity + '%');
                  }*/
                 /*console.log(qb.toString());*/
 
-                qb.on('query', function(data) {
-                    console.log(data);
-                })
+
             })
             .orderBy('-name')
             .fetchPage({page: query.page, pageSize: query.limit, withRelated: ['category']})

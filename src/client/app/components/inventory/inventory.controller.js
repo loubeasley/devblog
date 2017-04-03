@@ -7,6 +7,7 @@ class InventoryController {
         this.filter = {};
         this.itemHistory = {};
         this.loading = true;
+        this.categories = [];
     }
 
     get $inject() {
@@ -25,6 +26,10 @@ class InventoryController {
         this.InventoryService.init(this.items);
         this.InventoryService.load();
         this.loading = false;
+        this.ItemService.getCategories()
+            .then((results)=>{
+                this.categories = results;
+            });
     }
 
     handleFilterChange() {

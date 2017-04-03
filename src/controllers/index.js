@@ -4,6 +4,7 @@ import article from './article';
 import comment from './comments';
 import session from './session';
 import item from './item';
+import category from './category';
 import bookshelf from '../config/bookshelf';
 import role from '../models/role';
 import roleassignment from '../models/roleassignment';
@@ -19,6 +20,7 @@ export default () => {
     api.use('/comments', comment);
     api.use('/session', session);
     api.use('/item', item);
+    api.use('/category', category);
 
     api.get('/', (req, res) => {
         res.json({

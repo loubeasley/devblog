@@ -9,7 +9,7 @@ body {
 }
 
 .app {
-    margin-top: 50px;
+    margin-top: 100px;
 }
 
 .app .container {
@@ -177,6 +177,13 @@ article .avatar {
     background-color: transparent;
     outline: 0;
     border: none;
+
+}
+
+
+article-create .comment-create textarea {
+    height: 500px;
+
 }
 
 .comments-container > article-comments-children > .children {
@@ -821,6 +828,36 @@ label {
     right: 0;
     top: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0,0,0,0.5);
     z-index: 5000;
+    font-size: 50px;
+    text-align: center;
+    color: #cdcdef;
+    text-shadow: 2px 2px 6px black;
+}
+
+.md-editor.md-fullscreen-mode {
+    top: 50px;
+}
+
+.md-editor>.md-preview {
+    padding: 10px;
+}
+
+.inventory-swipe-pic img {
+    width: 10%;
+    height: auto;
+}
+
+.no-animate > * {
+    transition: none;
+}
+
+.inventory-swiper {
+    font-size: 30px;
+    padding: 0px 20px;
+}
+
+.overlay {
+
 }

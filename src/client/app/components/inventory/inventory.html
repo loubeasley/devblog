@@ -36,15 +36,24 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleInputName2" class="hidden-xs">Category</label>
-                    <select  class="form-control input-sm">
-                        <option>asdf</option>
-                        <option>asdf</option>
+                    <select  ng-change="$ctrl.handleFilterChange()"
+                             ng-model-options="{ allowInvalid: true, debounce: 200 }"
+                             class="form-control input-sm"
+                             ng-options="category.category_id as category.name for category in $ctrl.categories"
+                             ng-model="$ctrl.filter.category_id">
                         <option>asdf</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="exampleInputName2" class="hidden-xs">Quantity</label>
-                    <input type="text" class="form-control input-sm" id="exampleInputName2" placeholder="Jane Doe">
+                    <select  class="form-control input-sm">
+                        <option>==</option>
+                        <option>&gt;</option>
+                        <option>&lt;</option>
+
+                    </select>
+                    <input style="width:100px;" type="number" class="form-control input-sm" id="exampleInputName2" placeholder="0">
+
                 </div>
             </form>
         </div>
@@ -53,6 +62,9 @@
     <div class="inventory-table-wrapper">
         <table class="table table-striped inventory-table">
             <tbody>
+            <tr ng-show="!$ctrl.currentItems.length">
+                <td>No results.</td>
+            </tr>
             <tr class="bigger-text inventory-row" ng-repeat="item in $ctrl.currentItems"
                 ng-init="$item = $ctrl.getItem(item.item_id)"
 
@@ -65,14 +77,16 @@
                     ng-swipe-left="$ctrl.decrementQuantity($item)"
                     style="padding:0;"
                     id="{{'item-slider-' + item.item_id}}" class="inv-slider">
-
-                <span >
-                    {{$item._changes.quantity ? item.quantity : "&lt;[-]--[+]&gt;"}}
-                    <span ng-show="$item._changes.quantity" ng-class="$item._changes.quantity > 0 ? 'positive' : 'negative'"
-                          class="signed">
-                        {{$item._changes.quantity>0?$item._changes.quantity:($item._changes.quantity*-1) || ''}}
+                    <span ng-switch="!!$item._changes.quantity " class="no-animate">
+                        <span ng-switch-default>
+                             {{$item.quantity}}
+                            <span ng-class="$item._changes.quantity > 0 ? 'positive' : 'negative'"
+                                  class="signed">
+                                {{$item._changes.quantity>0?$item._changes.quantity:($item._changes.quantity*-1) || ''}}
+                            </span>
+                        </span>
+                        <span ng-switch-when="false" class="fa fa-arrows-h inventory-swiper"></span>
                     </span>
-                </span>
 
                 </td>
                 <td class="inventory-total-col">

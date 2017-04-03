@@ -26,6 +26,10 @@ var _item = require('./item');
 
 var _item2 = _interopRequireDefault(_item);
 
+var _category = require('./category');
+
+var _category2 = _interopRequireDefault(_category);
+
 var _bookshelf = require('../config/bookshelf');
 
 var _bookshelf2 = _interopRequireDefault(_bookshelf);
@@ -54,6 +58,7 @@ exports.default = function () {
     api.use('/comments', _comments2.default);
     api.use('/session', _session2.default);
     api.use('/item', _item2.default);
+    api.use('/category', _category2.default);
 
     api.get('/', function (req, res) {
         res.json({

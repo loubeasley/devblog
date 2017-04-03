@@ -1,14 +1,23 @@
 function ItemService($resource) {
-    var Item = $resource('/api/item/', null,
+    const Item = $resource('/api/item/', null,
         {
             'update': { method: 'PUT' }
         }
     );
+    const ItemCategory = $resource('/api/category/', null);
     return {
         getItems: function(params) {
             return Item.get(params || {}).$promise
                 .then(function (result) {
                     console.log(result);
+                    if(result.success) return result.results;
+
+                    return [];
+                });
+        },
+        getCategories: function() {
+            return ItemCategory.get().$promise
+                .then(function (result) {
                     if(result.success) return result.results;
 
                     return [];

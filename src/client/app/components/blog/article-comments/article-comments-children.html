@@ -19,8 +19,8 @@
 
             </div>
             <div class="comment-reply-area">
-                {{comment.commentID}}
-                <reply-button comment="comment" article="$ctrl.article" on-post="$ctrl.onPost()"></reply-button>
+
+                <reply-button ng-if="comment" comment="comment" article="$ctrl.article" on-post="$ctrl.onPost()"></reply-button>
             </div>
 
             <div class="comment-info">
