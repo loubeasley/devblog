@@ -90,7 +90,7 @@ router.route('/')
                     });
             });
     })
-    .post(function (req, res) {
+    .post(auth.user, function (req, res) {
         return Promise.map(Object.keys(req.body), function (id) {
             if(Object.keys(req.body[id]).length === 0) return null;
             console.log(req.body[id]);
@@ -104,23 +104,31 @@ router.route('/')
 
                     obj['quantity'] = item.attributes.quantity + obj.quantity;
 
-                    return item.save(obj).then(()=> req.body[id].quantity)
+                    return item.save(obj).then((result)=> {
+                        if(!result) return;
+
+
+                        //req.body[id].quantity
+                        //result = result.toJSON();
+
+                        return ItemAudit.create({
+                            cycle_id: 1,
+                            item_id: id,
+                            created_by: req.session.user.userID || null,
+                            change: req.body[id].quantity
+                        })
+
+                    })
                 });
         })
             .then(function (result) {
-                result = _.omitBy(result, _.isNil);
-
-                ItemAudit.create({data: JSON.stringify(result)})
-                    .then((result)=>{
-                        console.log(result);
-
-                        res.json({
-                            success: true,
-                            results: result,
-                            message: 'Article updated.'
-                        });
-                    });
-
+                //result = _.omitBy(result, _.isNil);
+                console.log(result);
+                res.json({
+                    success: true,
+                    results: result,
+                    message: 'Article updated.'
+                });
 
             })
             .catch(function (err) {
