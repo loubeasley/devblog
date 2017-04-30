@@ -5,6 +5,8 @@ import comment from './comments';
 import session from './session';
 import item from './item';
 import category from './category';
+import cycle from './cycle';
+import audit from './audit';
 import bookshelf from '../config/bookshelf';
 import role from '../models/role';
 import roleassignment from '../models/roleassignment';
@@ -14,13 +16,15 @@ let KnexLogger = _knexLogger(bookshelf.knex);
 
 export default () => {
     let api = Router();
-    api.use(KnexLogger);
+    //api.use(KnexLogger);
     api.use('/user', user);
     api.use('/article', article);
     api.use('/comments', comment);
     api.use('/session', session);
     api.use('/item', item);
     api.use('/category', category);
+    api.use('/cycle', cycle);
+    api.use('/audit', audit);
 
     api.get('/', (req, res) => {
         res.json({

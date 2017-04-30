@@ -4,6 +4,7 @@ function ArticleController($state, ArticleService) {
 
     ctrl.$onInit = function () {
         //console.log("WE DID THE THINGF");
+        //if(ctrl.preview) ctrl.article.body = '';
     };
 
     ctrl.deleteArticle = function () {

@@ -26,7 +26,7 @@ function replyButton() {
                 $($ctrl.selector).append($ctrl.replyBox);
             };
 
-            ctrl.hideReplyBox = function() {
+            $ctrl.hideReplyBox = function() {
                 if(!$ctrl.replyBox) return;
                 $($ctrl.replyBox).remove();
                 $ctrl.replyBoxScope.$destroy();

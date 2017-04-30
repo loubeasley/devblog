@@ -1,6 +1,7 @@
 import {Router} from 'express';
 import * as auth from '../middleware/auth';
 import Item from '../models/item';
+import Cycle from '../models/cycle';
 import * as Category from '../models/category';
 import ItemAudit from '../models/itemAudit';
 import * as Promise from 'bluebird';
@@ -41,7 +42,7 @@ router.route('/')
         if (error) {
             let test = _.map(error.details, 'path');
             value = _.omit(value, test);
-         /*   console.log(error);*/
+            /*   console.log(error);*/
         }
 
         let query = _.assign(defaultQuery, value);
@@ -73,8 +74,8 @@ router.route('/')
             .fetchPage({page: query.page, pageSize: query.limit, withRelated: ['category']})
             .then(function (collection) {
                 /*console.log(collection.query(function (qb){
-                    return console.log(qb.toString());
-                }));*/
+                 return console.log(qb.toString());
+                 }));*/
                 /*console.log(collection.toJSON());*/
                 res.json({
                     success: true,
@@ -91,45 +92,59 @@ router.route('/')
             });
     })
     .post(auth.user, function (req, res) {
-        return Promise.map(Object.keys(req.body), function (id) {
-            if(Object.keys(req.body[id]).length === 0) return null;
-            console.log(req.body[id]);
-            return new Item({item_id: id})
-                .fetch({require: true})
-                .then(function (item) {
-                    let obj = {item_id: id};
-                    if (!item) return null;
+        let audit_type = req.body.mode;
+        let items = req.body.items;
+        let cycle_id = 0;
+        console.log(req.body.items);
+        return new Cycle().getCurrent()
+            .then((currentCycle) => {
+                if (!currentCycle) throw new Error('Current cycle wasnt found!');
 
-                    _.assign(obj, req.body[id]);
+                cycle_id = currentCycle.attributes.cycle_id;
 
-                    obj['quantity'] = item.attributes.quantity + obj.quantity;
+                return Promise.map(Object.keys(items), function (item_id) {
+                    if (Object.keys(items[item_id]).length === 0) return null;
 
-                    return item.save(obj).then((result)=> {
-                        if(!result) return;
+                    return new Item({item_id})
+                        .fetch({require: true})
+                        .then(function (item) {
+                            let obj = {item_id: item_id};
+                            if (!item) return null;
 
+                            _.assign(obj, items[item_id]);
 
-                        //req.body[id].quantity
-                        //result = result.toJSON();
+                            if(obj.quantity)
+                                obj['quantity'] = item.attributes.quantity + obj.quantity;
 
-                        return ItemAudit.create({
-                            cycle_id: 1,
-                            item_id: id,
-                            created_by: req.session.user.userID || null,
-                            change: req.body[id].quantity
+                            return item.save(obj);
                         })
+                        .then(function (result) {
+                            if (!result) return null;
+                            console.log(result.toJSON());
 
-                    })
-                });
-        })
+                            return ItemAudit.create({
+                                cycle_id,
+                                item_id,
+                                audit_type,
+
+                                sell_price: result.attributes.sell_price,
+                                cost: result.attributes.cost,
+
+                                created_by: req.session.user.userID || null,
+                                change: items[item_id].quantity
+                            });
+                        })
+                        .then(() => item_id);
+                })
+            })
             .then(function (result) {
-                //result = _.omitBy(result, _.isNil);
-                console.log(result);
+
+
                 res.json({
                     success: true,
-                    results: result,
-                    message: 'Article updated.'
+                    results: _.omitBy(result, _.isNil),
+                    message: 'Items updated.'
                 });
-
             })
             .catch(function (err) {
                 res.status(500)

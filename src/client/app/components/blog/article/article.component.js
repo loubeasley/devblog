@@ -1,6 +1,7 @@
 var article = {
     bindings: {
-        'article': '<'
+        'article': '<',
+        'preview': '<'
     },
     templateUrl: './article.html',
     controller: 'ArticleController'

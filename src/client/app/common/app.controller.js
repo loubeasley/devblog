@@ -1,5 +1,7 @@
-function AppController($state, $rootScope) {
+function AppController($state, $rootScope, $stateParams) {
     var ctrl = this;
+
+    console.log($stateParams);
 }
 
 angular

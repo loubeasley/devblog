@@ -1,0 +1,50 @@
+<table class="table table-striped inventory-table">
+    <thead>
+    <tr>
+        <th>
+            name
+        </th>
+        <th>
+            cost
+        </th>
+        <th>
+            selling price (markup)
+        </th>
+        <th>
+            adjust price
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-show="!$ctrl.currentItems.length">
+        <td>No results.</td>
+    </tr>
+    <tr class="bigger-text inventory-row"
+        ng-repeat="item in $ctrl.currentItems"
+        ng-init="$item = $ctrl.InventoryService.getItem(item.item_id)"
+        ng-class="{'inventory-row-dirty' : $item.isDirty()}">
+
+        <td>{{item.name}}</td>
+
+        <td class="inventory-total-col">
+            {{item.cost | currency}} per {{item.unit}}
+        </td>
+
+        <td class="inventory-total-col">
+                            <span ng-class="{'positive' : $item._changes.sell_price > item.sell_price, 'negative' : $item._changes.sell_price < item.sell_price}">
+                                {{($item._changes.sell_price != null ? $item._changes.sell_price : item.sell_price) | currency}}
+                                ({{((($item._changes.sell_price || item.sell_price) - item.cost) / item.cost) * 100 | number: 2}} %)
+                            </span>
+        </td>
+
+        <td class="inventory-total-col">
+            <input type="number" class="form-control" style="width:100px; display: inline-block;"
+                   ng-model="$item._changes.sell_price"
+                   ng-value="item.sell_price"
+                   placeholder="{{item.sell_price}}"
+                   ng-change="$ctrl.InventoryService.save()"
+                   min="{{item.cost}}"/>
+        </td>
+    </tr>
+    </tbody>
+</table>

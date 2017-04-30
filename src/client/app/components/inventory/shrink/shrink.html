@@ -1,0 +1,45 @@
+<table class="table table-striped inventory-table">
+    <tbody>
+    <tr ng-show="!$ctrl.currentItems.length">
+        <td>No results.</td>
+    </tr>
+    <tr class="bigger-text inventory-row" ng-repeat="item in $ctrl.currentItems"
+        ng-init="$item = $ctrl.InventoryService.getItem(item.item_id)"
+        ng-class="{'inventory-row-dirty' : $item.isDirty()}">
+
+        <td>{{item.name}}&nbsp;&nbsp;<span class="hidden-xs">({{item.unit}})</span></td>
+
+        <td valign="center"
+            ng-swipe-right="$ctrl.decrementQuantity($item)"
+            ng-swipe-left="$ctrl.incrementQuantity($item)"
+            style="padding:0;"
+            id="{{'item-slider-' + item.item_id}}" class="inv-slider">
+
+                            <span ng-switch="!!$item._changes.quantity" class="no-animate">
+                                <span ng-switch-default>{{$item.quantity}}
+                                    <span ng-class="$item._changes.quantity > 0 ? 'positive' : 'negative'"
+                                          class="signed">
+                                    {{$item._changes.quantity>0?$item._changes.quantity:($item._changes.quantity*-1) || ''}}
+                                    </span>
+                                </span>
+                                <span ng-switch-when="false" class="">
+                                    shrink&nbsp;<span class="inventory-swiper fa fa-arrow-right"></span>
+                                </span>
+                            </span>
+        </td>
+
+        <td class="inventory-total-col">
+                        <span ng-class="{'positive' : $item._changes.quantity > 0, 'negative': $item._changes.quantity < 0}">
+                            {{($item._changes.quantity || 0) + item.quantity}}
+                        </span>
+        </td>
+
+        <td class="text-right hidden-xs">
+                            <span class="btn btn-default fa fa-plus" ng-click="$ctrl.incrementQuantity($item)"
+                                  ng-class="!$item._changes.quantity  ? 'disabled' : ''"></span>
+            <span class="btn btn-default fa fa-minus" ng-click="$ctrl.decrementQuantity($item)"
+                  ng-class="$item._changes.quantity + $item.quantity == 0 ? 'disabled' : ''"></span>
+        </td>
+    </tr>
+    </tbody>
+</table>

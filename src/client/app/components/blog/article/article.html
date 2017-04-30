@@ -14,7 +14,7 @@
     </div>
 
 </header>
-<div class="article-content">
+<div class="article-content" ng-if="!$ctrl.preview">
     <p marked="::$ctrl.article.body"></p>
     <!--<div style="position: relative">
         <p ng-bind-html="::$ctrl.article.body"></p>
@@ -23,10 +23,9 @@
     <div class="article-continue" ng-if="$ctrl.article.body.length > 200">
         <a ui-sref="article({id: $ctrl.article.articleID })">Continue reading...</a>{{$ctrl.article.articleID}}
     </div>-->
-    <div class="article-continue text-right">
-        <a ui-sref="app.article.view({articleID: $ctrl.article.articleID})">Comments »</a>
-    </div>
+
 </div>
+
 <!--
 <div class="article-comments text-right">
     <a>34 Comments</a>

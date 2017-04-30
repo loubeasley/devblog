@@ -1,0 +1,128 @@
+<div class="well light">
+    <div class="row inv-balance-info">
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Total Sales</h3>
+                    <h3 class="text-right">
+                                        <span class="label label-primary">
+                                            {{$ctrl.cReport.totalSales | currency:"$"}}
+                                        </span>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Total Cost</h3>
+                    <h3 class="text-right">
+                                        <span class="label label-primary">
+                                            {{$ctrl.cReport.totalCost | currency:"$"}}
+                                        </span>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Total Profit</h3>
+                    <h3 class="text-right">
+                                        <span class="label label-primary">
+                                            {{($ctrl.cReport.totalProfit || 0) | currency:"$"}}
+                                        </span>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Total Loss</h3>
+                    <h3 class="text-right">
+                                        <span class="label label-primary">
+                                            {{($ctrl.cReport.totalLoss || 0) | currency:"$"}}
+                                        </span>
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div style="width: 100%;">
+                <highchart ng-if="$ctrl.chart" id="chart1" config="$ctrl.chart"></highchart>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-responsive">
+                <tr>
+                    <th>Cycle ID</th>
+                    <th>Period</th>
+                    <th>Order - Cost ($)</th>
+                    <th>Shrink - Loss ($)</th>
+                    <th>Sale - Sales ($)</th>
+                    <th>Total Profit</th>
+                </tr>
+                <tr class="current-cycle" ng-repeat="cycle in $ctrl.cycles">
+                    <td>{{cycle.cycle_id}}</td>
+                    <td>{{cycle.start_date | date:"MM/dd/yyyy" }} - {{cycle.end_date | date:"MM/dd/yyyy" }}</td>
+                    <td>{{cycle.order || 0}} - {{(cycle.total_cost || 0) | currency:"$"}}</td>
+                    <td>{{cycle.shrink || 0}} - {{(cycle.total_loss || 0) | currency:"$"}}</td>
+                    <td>{{cycle.sale || 0}} - {{(cycle.total_sales || 0) | currency:"$"}}</td>
+
+                    <td>{{(cycle.total_profit || 0) | currency:"$"}}</td>
+
+
+                </tr>
+
+            </table>
+
+        </div>
+    </div>
+    <!--<div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Server Log</div>
+                <ul class="list-group" style="height: 300px; overflow-y: auto">
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                    <li class="list-group-item">sold 3 units (box) of celery</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Panel heading without title</div>
+                <div class="panel-body">
+                    Panel content
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-success">Dapibus ac facilisis in</li>
+                <li class="list-group-item list-group-item-info">Cras sit amet nibh libero</li>
+                <li class="list-group-item list-group-item-warning">Porta ac consectetur ac</li>
+                <li class="list-group-item list-group-item-danger">Vestibulum at eros</li>
+            </ul>
+        </div>
+    </div>-->
+
+
+</div>

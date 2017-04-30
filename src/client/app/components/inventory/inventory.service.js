@@ -1,29 +1,22 @@
 class InventoryItem {
-    constructor(session, obj) {
+    constructor(session, item_id) {
         if (!session) return {};
-        if (!obj) return {};
+        if (!item_id) return {};
 
         this._session = session;
-        this._original = obj;
+        //this._original = obj;
+        this.item_id = item_id;
         this._dirty = false;
         this._dirtyCount = 0;
         this._changes = {};
-
-
-
-        /* const self = Object.create(obj);
-         self.freeze();
-         Object.assign(this, self);*/
-        /*this.name = obj.name;
-         this.quantity = obj.quantity;
-         this.category = obj.category;
-         this.item_id = obj.item_id;
-         this.description = obj.description;
-         this.unit = obj.unit;*/
     }
 
     loadFromHistory(history) {
         this._changes = history;
+    }
+
+    get _original() {
+        return this._session.InventoryService.masterItemCache[this.item_id];
     }
 
     get name() {
@@ -64,32 +57,24 @@ class InventoryItem {
         return this._changes || null;
     }
 
-    /*mod(num) {
-     if(num === 0) return;
-
-     this.change += num;
-
-     if(this.change + this.quantity < 0) this.change -= (this.change + this.quantity);
-
-     if(this.change !== 0) this.dirty = true;
-     }*/
-
 
 }
 
-class InventoryService {
-    constructor(ItemService) {
+class ItemHistoryEntry {
+    constructor(InventoryService, mode) {
         this.allItems = {};
         this.lastSavedHistory = {};
         this.currentHistory = {};
         this.inProgress = false;
-        this.ItemService = ItemService;
+        this.mode = mode;
+        this.InventoryService = InventoryService;
+        this.lsid = '_invSession_' + this.mode;
     }
 
     init(rawItems) {
         this.allItems = {};
         rawItems.forEach((item) => {
-            this.allItems[item.item_id] = new InventoryItem(this, item);
+            this.allItems[item.item_id] = new InventoryItem(this, item.item_id);
         });
     }
 
@@ -99,8 +84,8 @@ class InventoryService {
 
     save() {
         this.lastSavedHistory = this.currentHistory;
-        localStorage.setItem('_invSession', JSON.stringify(this.allItems));
-        this.currentHistory = JSON.parse(localStorage.getItem('_invSession'));
+        localStorage.setItem(this.lsid, JSON.stringify(this.allItems));
+        this.currentHistory = JSON.parse(localStorage.getItem(this.lsid));
         console.log(this.lastSavedHistory);
     }
 
@@ -111,9 +96,9 @@ class InventoryService {
     }
 
     load() {
-        if (!localStorage.getItem('_invSession')) this.save();
+        if (!localStorage.getItem(this.lsid)) this.save();
         else {
-            let savedHistory = JSON.parse(localStorage.getItem('_invSession'));
+            let savedHistory = JSON.parse(localStorage.getItem(this.lsid));
             for(let key in savedHistory) {
 
                 if(!this.allItems[key]) continue;
@@ -126,28 +111,97 @@ class InventoryService {
 
     reset() {
         this.inProgress = false;
-        localStorage.setItem('_invSession', null);
-        localStorage.clear();
+        localStorage.setItem(this.lsid, null);
         this.allItems = {};
         this.currentHistory = {};
+    }
+}
+
+class InventoryService {
+    constructor(ItemService, $rootScope) {
+        this.$rootScope = $rootScope;
+        this.history = {
+            shrink: new ItemHistoryEntry(this, 'shrink'),
+            order: new ItemHistoryEntry(this, 'order'),
+            sale: new ItemHistoryEntry(this, 'sale')
+        };
+
+        this._mode = 'order';
+        this.ItemService = ItemService;
+        this.masterItemCache = {};
+
+    }
+
+    set mode(newMode) {
+        this._mode = newMode;
+        this.$rootScope.$broadcast('inventory.mode.change', newMode);
+    }
+
+    get mode() {
+        return this._mode;
+    }
+
+    init(rawItems) {
+
+        this.refresh(rawItems);
+        this.history.shrink.init(rawItems);
+        this.history.order.init(rawItems);
+        this.history.sale.init(rawItems);
+    }
+
+    getAllItems() {
+        return this.history[this.mode].allItems;
+    }
+
+    getModeHistory() {
+        return this.history[this.mode];
+    }
+
+    getItem(id) {
+        return this.history[this.mode].allItems[id];
+    }
+
+    save() {
+        this.history[this.mode].save();
+    }
+
+    start() {
+        this.history[this.mode].start();
+    }
+
+    refresh(rawItems) {
+        rawItems.forEach((item) => {
+            if(!item) return;
+            this.masterItemCache[item.item_id] = item;
+        });
+    }
+
+    load() {
+        this.history.shrink.load();
+        this.history.order.load();
+        this.history.sale.load();
+    }
+
+    reset() {
+        this.history[this.mode].reset();
     }
 
     commit() {
         this.save();
-        return this.ItemService.commit(this.currentHistory)
+        return this.ItemService.commit(this.mode, this.history[this.mode].currentHistory)
             .then((result)=>{
                 this.reset();
-                return result;
+
+                return this.history[this.mode];
             });
 
     }
 
     get $inject() {
-        return ['ItemService'];
+        return ['ItemService', '$rootScope'];
     }
 }
 
-
 angular
     .module('components.inventory')
-    .factory('InventoryService', (ItemService)=> new InventoryService(ItemService));
+    .factory('InventoryService', (ItemService, $rootScope)=> new InventoryService(ItemService, $rootScope));

@@ -6,7 +6,7 @@ import session from 'express-session';
 import BookshelfStore from 'connect-bookshelf';
 import passport from './config/passport';
 import * as Session from './models/session';
-
+import StoreSim from './middleware/storeSimulation';
 import config from './config';
 import bookshelf from './config/bookshelf';
 import api from './controllers';
@@ -59,5 +59,11 @@ app.use('/api', api());
 app.listen(process.env.PORT || config.port, function() {
     console.log(`Started on port ${this.address().port}`);
 });
+
+
+
+
+let sim = new StoreSim();
+
 
 export default app;

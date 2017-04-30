@@ -1,1 +1,7 @@
-<article ng-repeat="article in $ctrl.articles track by article.articleID" data-article="article"></article>
+<div ng-repeat="article in $ctrl.articles track by article.articleID">
+    <article data-article="article" data-preview="true"></article>
+    <div class="article-continue text-right">
+        <a ui-sref="app.article.view({articleID: article.articleID})">Comments »</a>
+    </div>
+</div>
+

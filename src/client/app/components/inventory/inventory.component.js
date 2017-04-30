@@ -2,7 +2,8 @@ const inventory = {
     templateUrl: './inventory.html',
     controller: 'InventoryController',
     bindings: {
-        items: '<'
+        items: '<',
+        cycle: '<'
     }
 };
 
@@ -12,11 +13,15 @@ angular
     .config(function ($stateProvider) {
         $stateProvider
             .state('app.inventory', {
+                abstract: true,
+
                 url: '/inventory?sort&page&limit&search',
-                component: 'inventory',
                 resolve: {
                     items: function (ItemService, $stateParams) {
                         return ItemService.getItems($stateParams);
+                    },
+                    cycle: function(CycleService) {
+                        return CycleService.getCurrentCycle();
                     }
                 },
                 views: {
@@ -24,10 +29,12 @@ angular
                         component: 'inventory'
                     },
                     widget: {
-                        template: `
-                            
-                        `
+                        component: 'inventoryNav'
                     }
                 }
+            })
+            .state('app.inventory.default', {
+                url: '',
+                redirectTo: 'app.inventory.order'
             });
     });

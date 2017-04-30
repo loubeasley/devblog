@@ -20,6 +20,8 @@ function checkCycle() {
             if(values.length === 0) startNewCycle(date);
             else knex.destroy();
         });
+
+
 }
 
 

@@ -1,5 +1,6 @@
 angular
     .module('common', [
+        'highcharts-ng',
         'ui.router',
         'ngResource',
         'ngAnimate',

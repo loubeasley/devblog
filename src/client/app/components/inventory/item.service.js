@@ -13,6 +13,9 @@ function ItemService($resource) {
                     if(result.success) return result.results;
 
                     return [];
+                })
+                .catch(function(err){
+                    console.error(err);
                 });
         },
         getCategories: function() {
@@ -23,8 +26,8 @@ function ItemService($resource) {
                     return [];
                 });
         },
-        commit: function(items) {
-            return Item.save(items).$promise
+        commit: function(mode, items) {
+            return Item.save({mode, items}).$promise
         },
         Item$: Item
     }

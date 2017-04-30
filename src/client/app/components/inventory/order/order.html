@@ -1,0 +1,34 @@
+<table class="table table-striped inventory-table">
+    <tbody>
+    <tr ng-show="!$ctrl.currentItems.length">
+        <td>No results.</td>
+    </tr>
+    <tr class="bigger-text inventory-row" ng-repeat="item in $ctrl.currentItems"
+        ng-init="$item = $ctrl.InventoryService.getItem(item.item_id)"
+
+        ng-class="{'inventory-row-dirty' : $item.isDirty()}">
+
+        <td>{{item.name}}&nbsp;&nbsp;<span class="hidden-xs">({{item.unit}})</span></td>
+        <td class="inventory-total-col">
+            {{item.quantity}}
+            <span ng-class="$item._changes.quantity > 0 ? 'positive' : 'negative'"
+                  ng-show="$item._changes.quantity">
+                                ({{$item._changes.quantity + item.quantity}})
+                            </span>
+        </td>
+        <td class="inventory-total-col">
+            {{item.cost | currency:"$" }}
+        </td>
+
+        <td class="text-right">
+            <input type="number" class="form-control" style="width:100px; display: inline-block;"
+                   ng-model="$item._changes.quantity" placeholder="0"
+                   ng-change="$ctrl.onOrderChange()" min="0">
+        </td>
+        <td class="inventory-total-col">
+            {{item.cost * $item._changes.quantity | currency:"$" }}
+        </td>
+
+    </tr>
+    </tbody>
+</table>

@@ -29,6 +29,7 @@ const paths = {
     modules: [
         'jquery/dist/jquery.min.js',
         'bootstrap/dist/js/bootstrap.min.js',
+       'highcharts/highcharts.src.js',
         'angular/angular.js',
         'angular-resource/angular-resource.js',
         'angular-animate/angular-animate.js',
@@ -37,13 +38,15 @@ const paths = {
         'angular-touch/angular-touch.js',
         'angular-scroll/angular-scroll.min.js',
         'angular-ui-router/release/angular-ui-router.js',
+        'highcharts-ng/dist/highcharts-ng.min.js',
         'marked/lib/marked.js',
         'angular-marked/dist/angular-marked.min.js',
         'bootstrap-markdown/js/bootstrap-markdown.js',
         'angular-highlightjs/src/angular-highlightjs.js',
         'angular-markdown-editor/src/angular-markdown-editor.js',
         'angular-utils-ui-breadcrumbs/uiBreadcrumbs.js',
-        'toastr/build/toastr.min.js'
+        'toastr/build/toastr.min.js',
+
     ],
     static: [
         `${root}/index.html`,
@@ -53,8 +56,6 @@ const paths = {
 };
 
 server.create();
-
-
 
 gulp.task('babel', () => {
     return gulp.src(['src/**/*.js', '!src/dist/**', '!src/client/**'])
@@ -109,17 +110,6 @@ gulp.task('scripts', ['modules'], () => {
         .pipe(gulpif(argv.deploy, uglify()))
         .pipe(gulp.dest('build/dist/' + 'js/'));
 });
-
-/*gulp.task('serve', ['nodemon'], () => {
-    return server.init({
-        files: [`${paths.dist}/!**`],
-        port: 4000,
-        /!*server: {
-            baseDir: paths.dist
-        },*!/
-        proxy: 'http://localhost:3000'
-    });
-});*/
 
 var nodemon_inst;
 

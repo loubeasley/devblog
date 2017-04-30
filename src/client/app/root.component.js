@@ -1,6 +1,5 @@
-var root = {
+let root = {
     templateUrl: './root.html'
-
 };
 
 angular

@@ -20,6 +20,8 @@ let Item = ModelBase.extend({
         description: Joi.string().length(255).alphanum(),
         unit: Joi.string().length(50).alphanum(),
         quantity: Joi.number().positive(),
+        sell_price: Joi.number().min(0).precision(2),
+        cost: Joi.number().min(0).precision(2),
     }
 });
 

@@ -32,6 +32,10 @@ var _session = require('./models/session');
 
 var Session = _interopRequireWildcard(_session);
 
+var _storeSimulation = require('./middleware/storeSimulation');
+
+var _storeSimulation2 = _interopRequireDefault(_storeSimulation);
+
 var _config = require('./config');
 
 var _config2 = _interopRequireDefault(_config);
@@ -48,8 +52,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// When the app starts
-var store = (0, _connectBookshelf2.default)(_expressSession2.default);
+var store = (0, _connectBookshelf2.default)(_expressSession2.default); // When the app starts
+
 
 var app = (0, _express2.default)();
 global._ = require('lodash');
@@ -97,5 +101,7 @@ app.use('/api', (0, _controllers2.default)());
 app.listen(process.env.PORT || _config2.default.port, function () {
     console.log('Started on port ' + this.address().port);
 });
+
+var sim = new _storeSimulation2.default();
 
 exports.default = app;
