@@ -38,6 +38,8 @@ class InventoryController {
     }
 
     $onInit() {
+
+        this.CycleService.getCurrentCycle();
         this.InventoryService.init(this.items);
         this.InventoryService.load();
         this.loading = false;
