@@ -22,9 +22,9 @@ angular
                 views: {
                     '' : {
                         component: 'blog'
-                    },
-                   /* widget: {
-                        template: 'asdf'
+                    }/*,
+                    widget: {
+                        template: `<div><img src="https://roguesharp.files.wordpress.com/2015/02/largecavern.png"/></div>`
                     }*/
                 },
                 data: {

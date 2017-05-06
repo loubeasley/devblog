@@ -1,26 +1,40 @@
-<div class="root">
-    <app-nav session="$ctrl.session"></app-nav>
-    <div ui-view="widget"></div>
-    <div class="app">
-        <main class="container">
-            <div class="blog-content">
-                <div ui-view></div>
+<header class="header">
+    <div> <!-- ascii-bg="['░', 'rgba(0,120,170, 1)', 'header.header']" -->
+        <!--<div class="wrapper">
+            <div class="background-box">
+                <div class="header__img ansibox" ascii-border="['╒═■│ │└─┘', '#fff', 'transparent', 'header.header']"></div>
+                &lt;!&ndash;<div class="header__bio ansibox" ascii-border="['══■  │──┘', '#ffffff', 'rgba(0, 0, 0, 0.25)', 'header.header']">&ndash;&gt;
+                <div class="header__bio ansibox" ascii-border="['══■  │──┘', '#fff', 'transparent', 'header.header']">
+                    <div class="info" >
+                        <p class="double-text black-text-shadow">K'Tyn Fowler</p>
+                        <p class="text-crimson">Entry Level Web Developer</p>
+                        <p class="text-aqua">IT Associate</p>
+                        <p class="text-emerald">Programming Hobbyist</p>
+                    </div>
+                </div>
             </div>
-        </main>
-    </div>
 
 
-    <!--<div class="row">
-        <div class="col-md-12 col-lg-6">
-            <label for="comment">Live Markdown with <a href="http://www.codingdrama.com/bootstrap-markdown/">Bootstrap-Markdown Editor</a>:</label>
-            <textarea name="content" markdown-editor="{'iconlibrary': 'fa', addExtraButtons: true, resize: 'vertical'}" rows="10" ng-model="markdown"></textarea>
-        </div>
-        <div class="col-md-12 col-lg-6 fill">
-            <div class="form-group">
-                <label for="comment">Preview Result:</label>
-                <div marked="markdown" class="outline" style="padding: 20px">
+        </div>-->
+        <div class="wrapper">
+            <!--<div class="header__img"></div>-->
+            <!--<div class="header__bio ansibox" ascii-border="['══■  │──┘', '#ffffff', 'rgba(0, 0, 0, 0.25)', 'header.header']">-->
+            <div class="header__bio">
+                <div class="info" >
+                    <p class="double-text black-text-shadow">K'Tyn Fowler</p>
+                    <p class="text-crimson">Portfolio & Devblog</p>
+                    <!--<p class="text-aqua">IT Associate</p>
+                    <p class="text-emerald">Programming Hobbyist</p>-->
                 </div>
             </div>
         </div>
-    </div>-->
-</div>
+    </div>
+</header>
+<app-nav session="$ctrl.session"></app-nav>
+
+
+<main class="container">
+    <div ui-view="widget"></div>
+    <div ui-view></div>
+
+</main>

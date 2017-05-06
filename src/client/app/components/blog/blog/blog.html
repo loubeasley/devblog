@@ -1,7 +1,26 @@
-<div ng-repeat="article in $ctrl.articles track by article.articleID">
-    <article data-article="article" data-preview="true"></article>
-    <div class="article-continue text-right">
+<section ng-repeat="article in $ctrl.articles track by article.articleID">
+    <!--<article data-article="article" data-preview="true"></article>-->
+    <!--<div class="article-continue text-right">
         <a ui-sref="app.article.view({articleID: article.articleID})">Comments »</a>
+    </div>-->
+    <header>
+        <div class="blog-page-article-title">
+            <h2><a ui-sref="app.article.view({articleID: article.articleID})">{{::article.title}}</a></h2>
+        </div>
+        <div class="divider"></div>
+        <div class="blog-page-article-date">
+            <span>{{::article.createdAt | date}}</span>
+            <div class="meta-divider"></div>
+        </div>
+    </header>
+    <div class="blog-page-article-content-preview">
+        <p>
+            <a ui-sref="app.article.view({articleID: article.articleID})">
+                orem ipsum deksdkfgl ghoweorlsdf lsldfll sld lorem ipsum deksdkfgl ghoweorlsdf lsldfll sld lorem ipsum
+                deksdkfgl ghoweorlsdf lsldfll sld lorem ipsum deksdkfgl ghoweorlsdf lsldfll sld
+            </a>
+        </p>
     </div>
-</div>
+    <div class="btn btn-default"><a ui-sref="app.article.view({articleID: article.articleID})">Read More</a></div>
+</section>
 
